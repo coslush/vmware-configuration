@@ -117,6 +117,34 @@ param (
     [switch]$restartHost
 )
 
+#Modules needed to run script and load
+$modules = @("Posh-SSH")
+
+#Check for correct modules
+Function checkModule ($m){
+    if (Get-Module | Where-Object {$_.Name -eq $m}) {
+        Write-Host "Module $m is already imported."
+    }
+    else{
+        Write-Host "Trying to import module $m"
+        Import-Module $m -Verbose
+    }
+}
+
+#Load Modules
+Try
+{
+    ForEach($module in $modules){
+        checkModule $module
+    }
+}
+Catch
+{
+    Write-Error "Failed to load modules"
+    Write-Error $_.Exception
+    Exit
+}
+
 foreach($hostname in $hostnames){
 	# Connect to the host
 	Write-Host
