@@ -146,6 +146,10 @@ Catch
 }
 
 foreach($hostname in $hostnames){
+	# Identify host being worked on
+	Write-Host
+	Write-Host "Current host is $hostname" -ForegroundColor Blue
+	
 	# Connect to the host
 	Write-Host
 	Write-Host "Connecting to the ESXi host $hostname via HTTPS"
@@ -164,7 +168,7 @@ foreach($hostname in $hostnames){
 	Write-Host "Adjusting CEIP configuration"
 	Try {
 		if($disableCEIP){
-			Get-VMHost | Get-AdvancedSetting -Name UserVars.HostClientCEIPOptIn | Set-AdvancedSetting -Value 2 -Confirm:$false | Out-Null
+			Get-VMHost -Name $hostname | Get-AdvancedSetting -Name UserVars.HostClientCEIPOptIn | Set-AdvancedSetting -Value 2 -Confirm:$false | Out-Null
 			Write-Host "...CEIP Disabled!" -ForegroundColor Green
 			Write-Host
 		}
@@ -183,8 +187,9 @@ foreach($hostname in $hostnames){
 	Write-Host "Adjusting 'VM Network' portgroup configuration"
 	Try {
 		if($matchVMNetwork){
-			$mgmtPG = Get-VirtualPortGroup -Name "Management Network"
-			Get-VirtualPortGroup -Name "VM Network" | Set-VirtualPortGroup -VLanId $mgmtPG.VLanId | Out-Null
+			$vmhostname = Get-VMHost -Name $hostname
+			$mgmtPG = Get-VirtualPortGroup -VMHost $vmhostname -Name "Management Network"
+			Get-VirtualPortGroup -VMHost $vmhostname -Name "VM Network" | Set-VirtualPortGroup -VLanId $mgmtPG.VLanId | Out-Null
 			Write-Host "...'VM Network' VLAN set!" -ForegroundColor Green
 			Write-Host
 		}
@@ -380,7 +385,7 @@ foreach($hostname in $hostnames){
 		# Connect via SSHCommand
 		Write-Host "Connecting to $hostname via SSH"
 		Try {
-			$esxihostssh = New-SSHSession -ComputerName $hostname -Credential $esxicred -AcceptKey -KeepAliveInterval 5
+			$esxihostssh = New-SSHSession -ComputerName $hostname -Credential $esxicred -Force -KeepAliveInterval 5
 		}
 		Catch {
 			Write-Error "Failed to connect to $hostname via SSH"
@@ -468,7 +473,7 @@ foreach($hostname in $hostnames){
 	Write-Host "Disconnecting HTTPS from the ESXi host $hostname"
 	Try {
 		# Close PowerCLI connection to the ESXi host
-		Disconnect-VIServer -Confirm:$false
+		Disconnect-VIServer $hostname -Confirm:$false
 	}
 	Catch {
 		Write-Error "Failed to disconnect from $hostname"
