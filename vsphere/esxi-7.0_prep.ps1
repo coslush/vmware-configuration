@@ -155,6 +155,8 @@ foreach($hostname in $hostnames){
 	Write-Host "Connecting to the ESXi host $hostname via HTTPS"
 	Try {
 		Connect-VIServer $hostname -Credential $esxicred -Protocol https -ErrorAction Stop | Out-Null
+		$vmhost = Get-VMHost -Name $hostname
+		
 	}
 	Catch {
 		Write-Error "Failed to connect to $hostname via HTTPS"
@@ -187,9 +189,8 @@ foreach($hostname in $hostnames){
 	Write-Host "Adjusting 'VM Network' portgroup configuration"
 	Try {
 		if($matchVMNetwork){
-			$vmhostname = Get-VMHost -Name $hostname
-			$mgmtPG = Get-VirtualPortGroup -VMHost $vmhostname -Name "Management Network"
-			Get-VirtualPortGroup -VMHost $vmhostname -Name "VM Network" | Set-VirtualPortGroup -VLanId $mgmtPG.VLanId | Out-Null
+			$mgmtPG = Get-VirtualPortGroup -VMHost $vmhost -Name "Management Network"
+			Get-VirtualPortGroup -VMHost $vmhost -Name "VM Network" | Set-VirtualPortGroup -VLanId $mgmtPG.VLanId | Out-Null
 			Write-Host "...'VM Network' VLAN set!" -ForegroundColor Green
 			Write-Host
 		}
@@ -208,12 +209,12 @@ foreach($hostname in $hostnames){
 	Write-Host "Setting NTP Server configuration"
 	Try {
 		if($ntpServers.Count -gt 0){
-			$currNTP = Get-VMHostNtpServer
+			$currNTP = Get-VMHostNtpServer -VMHost $vmhost 
 			if ($currNTP -ne $null){
-				Remove-VMHostNtpServer $currNTP -Confirm:$false | Out-Null
+				Remove-VMHostNtpServer -VMHost $vmhost $currNTP -Confirm:$false | Out-Null
 			}
 			foreach($ntpServer in $ntpServers){
-				Get-VMHost | Add-VMHostNtpServer $ntpServer | Out-Null
+				Get-VMHost -Name $hostname | Add-VMHostNtpServer $ntpServer | Out-Null
 			}
 			Write-Host "...NTP server(s) set!" -ForegroundColor Green
 			Write-Host
@@ -232,7 +233,7 @@ foreach($hostname in $hostnames){
 	# Set NTP Service Policy
 	Write-Host "Setting NTP Service Policy"
 	Try {
-		Get-VMHost | Get-VMHostService | Where {$_.Label -eq "NTP Daemon"} | Set-VMHostService -Policy On | Out-Null
+		Get-VMHost -Name $hostname | Get-VMHostService | Where {$_.Label -eq "NTP Daemon"} | Set-VMHostService -Policy On | Out-Null
 		Write-Host "...NTP service policy set!" -ForegroundColor Green
 		Write-Host
 	}
@@ -245,7 +246,7 @@ foreach($hostname in $hostnames){
 	# Start NTP Service
 	Write-Host "Starting NTP Service"
 	Try {
-		Get-VMHost | Get-VMHostService | Where {$_.Label -eq "NTP Daemon"} | Start-VMHostService | Out-Null
+		Get-VMHost -Name $hostname | Get-VMHostService | Where {$_.Label -eq "NTP Daemon"} | Start-VMHostService | Out-Null
 		Write-Host "...NTP service started!" -ForegroundColor Green
 		Write-Host
 	}
@@ -258,7 +259,7 @@ foreach($hostname in $hostnames){
 	# Set SSH Service Policy
 	Write-Host "Setting SSH Service Policy"
 	Try {
-		Get-VMHost | Get-VMHostService | Where {$_.Label -eq "SSH"} | Set-VMHostService -Policy On | Out-Null
+		Get-VMHost -Name $hostname | Get-VMHostService | Where {$_.Label -eq "SSH"} | Set-VMHostService -Policy On | Out-Null
 		Write-Host "...SSH service policy set!" -ForegroundColor Green
 		Write-Host
 	}
@@ -271,7 +272,7 @@ foreach($hostname in $hostnames){
 	# Start SSH Service
 	Write-Host "Starting SSH Service"
 	Try {
-		Get-VMHost | Get-VMHostService | Where {$_.Label -eq "SSH"} | Start-VMHostService | Out-Null
+		Get-VMHost -Name $hostname | Get-VMHostService | Where {$_.Label -eq "SSH"} | Start-VMHostService | Out-Null
 		Write-Host "...SSH service started!" -ForegroundColor Green
 		Write-Host
 	}
@@ -284,7 +285,7 @@ foreach($hostname in $hostnames){
 	# Set ESXi Shell Service Policy
 	Write-Host "Setting SSH Service Policy"
 	Try {
-		Get-VMHost | Get-VMHostService | Where {$_.Label -eq "ESXi Shell"} | Set-VMHostService -Policy Off | Out-Null
+		Get-VMHost -Name $hostname | Get-VMHostService | Where {$_.Label -eq "ESXi Shell"} | Set-VMHostService -Policy Off | Out-Null
 		Write-Host "...ESXi shell service policy set!" -ForegroundColor Green
 		Write-Host
 	}
@@ -297,7 +298,7 @@ foreach($hostname in $hostnames){
 	# Stop ESXi Shell Service
 	Write-Host "Stopping ESXi Shell service"
 	Try {
-		Get-VMHost | Get-VMHostService | Where {$_.Label -eq "ESXi Shell"} | Stop-VMHostService -Confirm:$false | Out-Null
+		Get-VMHost -Name $hostname | Get-VMHostService | Where {$_.Label -eq "ESXi Shell"} | Stop-VMHostService -Confirm:$false | Out-Null
 		Write-Host "...ESXi shell service stopped!" -ForegroundColor Green
 		Write-Host
 	}
@@ -312,26 +313,28 @@ foreach($hostname in $hostnames){
 	Try {
 		if($rollvmk0){
 			# Get the current info for restoring later
-			$currSettings = Get-VMHostNetworkAdapter -name vmk0
+			$currSettings = Get-VMHostNetworkAdapter -VMHost $vmhost -name vmk0
 		
 			# Add a temporary vmkernel adapter to the "VM Network" portgroup
-			$vsw0 = Get-VirtualSwitch -Name "vSwitch0"
-			New-VMHostNetworkAdapter -VirtualSwitch $vsw0 -PortGroup "VM Network" -IP $rollvmk0 -SubnetMask $currSettings.SubnetMask -ManagementTrafficEnabled $true | Out-Null
-			Disconnect-VIServer -Confirm:$false | Out-Null
+			$vsw0 = Get-VirtualSwitch -VMHost $vmhost -Name "vSwitch0"
+			New-VMHostNetworkAdapter -VMHost $vmhost -VirtualSwitch $vsw0 -PortGroup "VM Network" -IP $rollvmk0 -SubnetMask $currSettings.SubnetMask -ManagementTrafficEnabled $true | Out-Null
+			Disconnect-VIServer -Server $hostname -Confirm:$false | Out-Null
 
 			# Delete the original vmk0
 			Connect-VIServer $rollvmk0 -Credential $esxicred -Protocol https -ErrorAction Stop | Out-Null
-			$vmk0 = Get-VMHostNetworkAdapter -Name "vmk0"
+			$vmk0host = Get-VMHost -Name $rollvmk0
+			$vmk0 = Get-VMHostNetworkAdapter -VMHost $vmk0host -Name "vmk0"
 			Remove-VMHostNetworkAdapter $vmk0 -Confirm:$false | Out-Null
 
 			# Create a new vmk0
-			$vsw1 = Get-VirtualSwitch -Name "vSwitch0"
-			New-VMHostNetworkAdapter -VirtualSwitch $vsw1 -PortGroup "Management Network" -IP $currSettings.IP -SubnetMask $currSettings.SubnetMask -ManagementTrafficEnabled $true | Out-Null
-			Disconnect-VIServer -Confirm:$false | Out-Null
+			$vsw1 = Get-VirtualSwitch -VMHost $vmk0host -Name "vSwitch0"
+			New-VMHostNetworkAdapter -VMHost $vmk0host -VirtualSwitch $vsw1 -PortGroup "Management Network" -IP $currSettings.IP -SubnetMask $currSettings.SubnetMask -ManagementTrafficEnabled $true | Out-Null
+			Disconnect-VIServer -Server $rollvmk0 -Confirm:$false | Out-Null
 
 			# Delete the temporary vmkernel adapter
 			Connect-VIServer $hostname -Credential $esxicred -Protocol https -ErrorAction Stop | Out-Null
-			$vmk1 = Get-VMHostNetworkAdapter -Name "vmk1"
+			$vmhost = Get-VMHost -Name $hostname
+			$vmk1 = Get-VMHostNetworkAdapter -VMHost $vmhost -Name "vmk1"
 			Remove-VMHostNetworkAdapter $vmk1 -Confirm:$false | Out-Null
 			
 			Write-Host "...vmk0 updated!" -ForegroundColor Green
@@ -353,7 +356,7 @@ foreach($hostname in $hostnames){
 	Try {
 		if($updateHost.Count -gt 0){
 			if($updateHost.Count -eq 2){
-				$hostEsxCli = Get-VMHost | Get-EsxCli -V2
+				$hostEsxCli = Get-VMHost -Name $hostname | Get-EsxCli -V2
 				$updateArgs = $hostEsxCli.software.profile.install.CreateArgs()
 				$updateArgs.profile = $updateHost[0]
 				$updateArgs.depot = $updateHost[1]
@@ -438,7 +441,7 @@ foreach($hostname in $hostnames){
 	Write-Host "Checking if host should be restarted"
 	Try {
 		if($restartHost){
-			Restart-VMHost -Force -Confirm:$false
+			Restart-VMHost -VMHost $vmhost Force -Confirm:$false
 			Write-Host "...Host restarted!" -ForegroundColor Green
 			Write-Host
 		}
