@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# File Name  : ESXi_7.0_VCF_Prep.ps1 
+# File Name  : validate_bundles.sh 
 # Author     : coslush
 # Version    : 0.1
 # License    : Apache-2.0
