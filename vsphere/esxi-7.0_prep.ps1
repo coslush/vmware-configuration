@@ -441,7 +441,7 @@ foreach($hostname in $hostnames){
 	Write-Host "Checking if host should be restarted"
 	Try {
 		if($restartHost){
-			Restart-VMHost -VMHost $vmhost Force -Confirm:$false
+			Restart-VMHost -VMHost $vmhost -Force -Confirm:$false
 			Write-Host "...Host restarted!" -ForegroundColor Green
 			Write-Host
 		}
