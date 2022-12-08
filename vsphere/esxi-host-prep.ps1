@@ -1,39 +1,53 @@
 <# 
 .NOTES 
-    File Name  : esxi-host-prep.ps1 
-    Author     : coslush
-    Version    : 0.1
-    License    : Apache-2.0
+File Name  : esxi-host-prep.ps1 
+Author     : coslush
+Version    : 1.0
+License    : Apache-2.0
     
-	.PARAMETER disableCEIP
-	Disables CEIP
-	.PARAMETER esxicred
+.PARAMETER disableCEIP
+Disables CEIP
+.PARAMETER esxicred
     Enter the pscredential variable name to use for authentication to the ESXi host. This can be run before the script for example: $cred = get-pscredential 
-	.PARAMETER hostnames
+.PARAMETER hostnames
     Enter the FQDN/IP or list of FQDN/IPs of the ESXi Server(s) to prep for VCF
-	.PARAMETER matchVMNetwork
-	Matches the vlan set on the VM Network portgroup to the vlan defined on the Management Network portgroup
-	.PARAMETER startSSH
-	Starts the SSH service
-	.PARAMETER disableESXCLI
-	Disables the ESXCLI service
-	.PARAMETER rollCerts
-	Rolls the default certificates to match the current FQDN (Requires reboot or services restart to take effect)
-	.PARAMETER rollvmk0
-	Changes the vmk0 MAC address to a dynamic one
-	.PARAMETER disableIPv6
-	Disables IPv6 (Requires reboot to take effect)
-	.PARAMETER restartServices
-	Restarts all the services
-	.PARAMETER restartHost
-	Restarts the host
-	.PARAMETER createAdmin
-	Creates an admin user with the given username and password
-	.PARAMETER updateHost
-	Updates the host software profile to the given profile name at the specified URL
-	.PARAMETER stigFile
-	Applies the enabled STIGs in the specified file
-	
+.PARAMETER matchVMNetwork
+Matches the vlan set on the VM Network portgroup to the vlan defined on the Management Network portgroup
+.PARAMETER startSSH
+Starts the SSH service
+.PARAMETER disableESXCLI
+Disables the ESXCLI service
+.PARAMETER rollCerts
+Rolls the default certificates to match the current FQDN (Requires reboot or services restart to take effect)
+.PARAMETER rollvmk0
+Changes the vmk0 MAC address to a dynamic one
+.PARAMETER disableIPv6
+Disables IPv6 (Requires reboot to take effect)
+.PARAMETER restartServices
+Restarts all the services
+.PARAMETER restartHost
+Restarts the host
+.PARAMETER createAdmin
+Creates an admin user with the given username and password
+.PARAMETER updateHost
+Updates the host software profile to the given profile name at the specified URL
+.PARAMETER stigFile
+Applies the enabled STIGs in the specified file
+
+.EXAMPLE
+.\esxi-host-prep.ps1
+
+.EXAMPLE
+$esxicreds = Get-Credential
+.\esxi-host-prep.ps1 -hostnames "172.16.98.31","esxi32.mydomain.local" -esxicred $esxicreds -startSSH
+
+.EXAMPLE
+$esxicreds = Get-Credential
+.\esxi-host-prep.ps1 -hostnames "172.16.98.31" -esxicred $esxicreds -disableCEIP -matchVMNetwork -disableIPv6 -rollCerts -rollvmk0 -stigFile preDeploy-stig-controls.json -restartHost -createAdmin "ladmin","12qwaszx!@QWASZX"
+
+.EXAMPLE
+$esxicreds = Get-Credential
+.\esxi-host-prep.ps1 -hostnames "esxi01.mydomain.local" -esxicred $esxicreds -restartHost -updateHost "ESXi-7.0U3g-20328353-standard","https://updaterepo/VMware-ESXi-7.0U3g-20328353-depot/index.xml"
 
 .SYNOPSIS 
     Configures the required settings on an ESXi host for a VCF deployment
