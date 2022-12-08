@@ -1,0 +1,39 @@
+{
+	"STIG_Items": [{ 
+		"Control_ID": "VCPF-70-000013",
+		"Enabled": true,
+		"Requirement": "Performance Charts must have mappings set for Java servlet pages.",
+		"Control_Input": "",
+		"Check_Text": "xmllint --format /usr/lib/vmware-perfcharts/tc-instance/conf/web.xml | sed 's/xmlns="".*""//g' | xmllint --xpath '/web-app/servlet-mapping/servlet-name[text()=""jsp""]/parent::servlet-mapping' -",
+		"Expected_Result": "<servlet-mapping>\\n\\t<servlet-name>jsp</servlet-name>\\n\\t<url-pattern>*.jsp</url-pattern>\\n\\t<url-pattern>*.jspx</url-pattern>\\n</servlet-mapping>",
+		"Fix_Text": "Navigate to and open: \\n/usr/lib/vmware-perfcharts/tc-instance/conf/web.xml\\nInside the <web-app> parent node, add the following:\\n<servlet-mapping>\\n\\t<servlet-name>jsp</servlet-name>\\n\\t<url-pattern>*.jsp</url-pattern>\\n\\t<url-pattern>*.jspx</url-pattern>\\n</servlet-mapping>\\nRestart the service with the following command:\\n# vmon-cli --restart perfcharts",
+		"Notes": ""
+	},{ 
+		"Control_ID": "VCPF-70-000014",
+		"Enabled": true,
+		"Requirement": "Performance Charts must not have the Web Distributed Authoring (WebDAV) servlet installed.",
+		"Control_Input": "",
+		"Check_Text": "grep -n 'webdav' /usr/lib/vmware-perfcharts/tc-instance/conf/web.xml",
+		"Expected_Result": "",
+		"Fix_Text": "Navigate to and open:\\n/usr/lib/vmware-perfcharts/tc-instance/conf/web.xml\\nFind the <servlet-name>webdav</servlet-name> node and remove the entire parent <servlet> block.\\nRestart the service with the following command:\\n# vmon-cli --restart perfcharts",
+		"Notes": ""
+	},{ 
+		"Control_ID": "VCPF-70-000015",
+		"Enabled": true,
+		"Requirement": "Performance Charts must be configured with memory leak protection.",
+		"Control_Input": "",
+		"Check_Text": "grep JreMemoryLeakPreventionListener /usr/lib/vmware-perfcharts/tc-instance/conf/server.xml",
+		"Expected_Result": "<Listener className=""org.apache.catalina.core.JreMemoryLeakPreventionListener""/>",
+		"Fix_Text": "Navigate to and open:\\n/usr/lib/vmware-perfcharts/tc-instance/conf/server.xml\\nNavigate to the <Server> node.\\nAdd '<Listener className=""org.apache.catalina.core.JreMemoryLeakPreventionListener""/>' to the <Server> node.\\nRestart the service with the following command:\\n# vmon-cli --restart perfcharts",
+		"Notes": ""
+	},{ 
+		"Control_ID": "XXXXXX",
+		"Enabled": true,
+		"Requirement": "",
+		"Control_Input": "",
+		"Check_Text": "",
+		"Expected_Result": "",
+		"Fix_Text": "",
+		"Notes": ""
+	}]
+}

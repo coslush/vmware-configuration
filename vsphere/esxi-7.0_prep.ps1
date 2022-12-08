@@ -458,7 +458,7 @@ foreach($hostname in $hostnames){
 	
 	if($esxihostssh){
 		# Disconnect from the host
-		Write-Host "Disconnecting SSH from the ESXi host $hostname"
+		Write-Host "Disconnecting SSH from the ESXi host $hostname"o
 		Try {
 			# Close SSH connection to the ESXi host
 			$sshdc = Remove-SSHSession -SessionId $esxihostssh.SessionId

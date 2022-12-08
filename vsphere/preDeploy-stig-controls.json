@@ -1,0 +1,459 @@
+{
+	"STIG_Items": [{ 
+		"Control_ID": "ESXI-70-000001",
+		"Enabled": false,
+		"Requirement": "Access to the ESXi host must be limited by enabling Lockdown Mode.",
+		"Control_Input": "Normal",
+		"Notes": "Normal, Strict. Apply after VCF deployment or commissioning host in SDDC manager."
+	},{ 
+		"Control_ID": "ESXI-70-000002",
+		"Enabled": false,
+		"Requirement": "The ESXi host must verify the DCUI.Access list.",
+		"Control_Input": "root",
+		"Notes": ""
+	},{ 
+		"Control_ID": "ESXI-70-000003",
+		"Enabled": false,
+		"Requirement": "The ESXi host must verify the exception users list for Lockdown Mode.",
+		"Control_Input": "root",
+		"Notes": "Apply after VCF deployment or commissioning host in SDDC manager."
+	},{ 
+		"Control_ID": "ESXI-70-000004",
+		"Enabled": false,
+		"Requirement": "Remote logging for ESXi hosts must be configured.",
+		"Control_Input": "tcp://loginsight:514,ssl://loginsight:1514",
+		"Notes": "Apply after VCF deployment or commissioning host in SDDC manager."
+	},{ 
+		"Control_ID": "ESXI-70-000005",
+		"Enabled": true,
+		"Requirement": "The ESXi host must enforce the limit of three consecutive invalid logon attempts by a user.",
+		"Control_Input": "3",
+		"Notes": ""
+	},{ 
+		"Control_ID": "ESXI-70-000006",
+		"Enabled": true,
+		"Requirement": "The ESXi host must enforce an unlock timeout of 15 minutes after a user account is locked out.",
+		"Control_Input": "900",
+		"Notes": ""
+	},{ 
+		"Control_ID": "ESXI-70-000007",
+		"Enabled": true,
+		"Requirement": "The ESXi host must display the Standard Mandatory DoD Notice and Consent Banner before granting access to the system via the DCUI.",
+		"Control_Input": "You are accessing a U.S. Government (USG) Information System (IS) that is provided for USG-authorized use only.\n\nBy using this IS (which includes any device attached to this IS), you consent to the following conditions:\n\n-The USG routinely intercepts and monitors communications on this IS for purposes including, but not limited to, penetration testing, COMSEC monitoring, network operations and defense, personnel misconduct (PM), law enforcement (LE), and counterintelligence (CI) investigations.\n\n-At any time, the USG may inspect and seize data stored on this IS.\n\n-Communications using, or data stored on, this IS are not private, are subject to routine monitoring, interception, and search, and may be disclosed or used for any USG-authorized purpose.\n\n-This IS includes security measures (e.g., authentication and access controls) to protect USG interests- -not for your personal benefit or privacy.\n\n-Notwithstanding the above, using this IS does not constitute consent to PM, LE or CI investigative searching or monitoring of the content of privileged communications, or work product, related to personal representation or services by attorneys, psychotherapists, or clergy, and their assistants. Such communications and work product are private and confidential.\n\nSee User Agreement for details.",
+		"Notes": ""
+	},{ 
+		"Control_ID": "ESXI-70-000008",
+		"Enabled": true,
+		"Requirement": "The ESXi host must display the Standard Mandatory DoD Notice and Consent Banner before granting access to the system via SSH.",
+		"Control_Input": "You are accessing a U.S. Government (USG) Information System (IS) that is provided for USG-authorized use only.\n\nBy using this IS (which includes any device attached to this IS), you consent to the following conditions:\n\n-The USG routinely intercepts and monitors communications on this IS for purposes including, but not limited to, penetration testing, COMSEC monitoring, network operations and defense, personnel misconduct (PM), law enforcement (LE), and counterintelligence (CI) investigations.\n\n-At any time, the USG may inspect and seize data stored on this IS.\n\n-Communications using, or data stored on, this IS are not private, are subject to routine monitoring, interception, and search, and may be disclosed or used for any USG-authorized purpose.\n\n-This IS includes security measures (e.g., authentication and access controls) to protect USG interests- -not for your personal benefit or privacy.\n\n-Notwithstanding the above, using this IS does not constitute consent to PM, LE or CI investigative searching or monitoring of the content of privileged communications, or work product, related to personal representation or services by attorneys, psychotherapists, or clergy, and their assistants. Such communications and work product are private and confidential.\n\nSee User Agreement for details.",
+		"Notes": ""
+	},{ 
+		"Control_ID": "ESXI-70-000009",
+		"Enabled": true,
+		"Requirement": "The ESXi host SSH daemon must be configured with the DoD logon banner.",
+		"Control_Input": "",
+		"Notes": ""
+	},{ 
+		"Control_ID": "ESXI-70-000010",
+		"Enabled": true,
+		"Requirement": "The ESXi host SSH daemon must use FIPS 140-2 validated cryptographic modules to protect the confidentiality of remote access sessions.",
+		"Control_Input": "",
+		"Notes": ""
+	},{ 
+		"Control_ID": "ESXI-70-000012",
+		"Enabled": true,
+		"Requirement": "The ESXi host SSH daemon must ignore .rhosts files.",
+		"Control_Input": "",
+		"Notes": ""
+	},{ 
+		"Control_ID": "ESXI-70-000013",
+		"Enabled": true,
+		"Requirement": "The ESXi host SSH daemon must not allow host-based authentication.",
+		"Control_Input": "",
+		"Notes": ""
+	},{ 
+		"Control_ID": "ESXI-70-000014",
+		"Enabled": false,
+		"Requirement": "The ESXi host SSH daemon must not permit root logins.",
+		"Control_Input": "",
+		"Notes": "Enable after VCF deployment or commissioning host in SDDC manager"
+	},{ 
+		"Control_ID": "ESXI-70-000015",
+		"Enabled": true,
+		"Requirement": "The ESXi host SSH daemon must not allow authentication using an empty password.",
+		"Control_Input": "",
+		"Notes": ""
+	},{ 
+		"Control_ID": "ESXI-70-000016",
+		"Enabled": true,
+		"Requirement": "The ESXi host SSH daemon must not permit user environment settings.",
+		"Control_Input": "",
+		"Notes": ""
+	},{ 
+		"Control_ID": "ESXI-70-000020",
+		"Enabled": true,
+		"Requirement": "The ESXi host SSH daemon must perform strict mode checking of home directory configuration files.",
+		"Control_Input": "",
+		"Notes": ""
+	},{ 
+		"Control_ID": "ESXI-70-000021",
+		"Enabled": true,
+		"Requirement": "The ESXi host SSH daemon must not allow compression or must only allow compression after successful authentication.",
+		"Control_Input": "",
+		"Notes": ""
+	},{ 
+		"Control_ID": "ESXI-70-000022",
+		"Enabled": true,
+		"Requirement": "The ESXi host SSH daemon must be configured to not allow gateway ports.",
+		"Control_Input": "",
+		"Notes": ""
+	},{ 
+		"Control_ID": "ESXI-70-000023",
+		"Enabled": true,
+		"Requirement": "The ESXi host SSH daemon must be configured to not allow X11 forwarding.",
+		"Control_Input": "",
+		"Notes": ""
+	},{ 
+		"Control_ID": "ESXI-70-000025",
+		"Enabled": true,
+		"Requirement": "The ESXi host SSH daemon must not permit tunnels.",
+		"Control_Input": "",
+		"Notes": ""
+	},{ 
+		"Control_ID": "ESXI-70-000026",
+		"Enabled": true,
+		"Requirement": "The ESXi host SSH daemon must set a timeout count on idle sessions.",
+		"Control_Input": "",
+		"Notes": ""
+	},{ 
+		"Control_ID": "ESXI-70-000027",
+		"Enabled": true,
+		"Requirement": "The ESXi host SSH daemon must set a timeout interval on idle sessions.",
+		"Control_Input": "",
+		"Notes": ""
+	},{ 
+		"Control_ID": "ESXI-70-000030",
+		"Enabled": true,
+		"Requirement": "The ESXi host must produce audit records containing information to establish what type of events occurred.",
+		"Control_Input": "info",
+		"Notes": ""
+	},{ 
+		"Control_ID": "ESXI-70-000031",
+		"Enabled": true,
+		"Requirement": "The ESXi host must be configured with a sufficiently complex password policy.",
+		"Control_Input": "similar=deny retry=3 min=disabled,disabled,disabled,disabled,15",
+		"Notes": ""
+	},{ 
+		"Control_ID": "ESXI-70-000032",
+		"Enabled": true,
+		"Requirement": "The ESXi host must prohibit the reuse of passwords within five iterations.",
+		"Control_Input": "5",
+		"Notes": ""
+	},{ 
+		"Control_ID": "ESXI-70-000034",
+		"Enabled": true,
+		"Requirement": "The ESXi host must disable the Managed Object Browser (MOB).",
+		"Control_Input": "",
+		"Notes": ""
+	},{ 
+		"Control_ID": "ESXI-70-000035",
+		"Enabled": false,
+		"Requirement": "The ESXi host must be configured to disable nonessential capabilities by disabling SSH.",
+		"Control_Input": "",
+		"Notes": "Configuring this may prevent other STIG configurations from being applied as they may need to be applied via SSH. Apply after VCF deployment."
+	},{ 
+		"Control_ID": "ESXI-70-000036",
+		"Enabled": true,
+		"Requirement": "The ESXi host must disable ESXi Shell unless needed for diagnostics or troubleshooting.",
+		"Control_Input": "",
+		"Notes": ""
+	},{ 
+		"Control_ID": "ESXI-70-000037",
+		"Enabled": false,
+		"Requirement": "The ESXi host must use Active Directory for local user authentication.",
+		"Control_Input": "",
+		"Notes": "Apply after VCF deployment or commissioning host in SDDC manager."
+	},{ 
+		"Control_ID": "ESXI-70-000038",
+		"Enabled": false,
+		"Requirement": "ESXi hosts using Host Profiles and/or Auto Deploy must use the vSphere Authentication Proxy to protect passwords when adding themselves to Active Directory.",
+		"Control_Input": "",
+		"Notes": "Apply after VCF deployment or commissioning host in SDDC manager."
+	},{ 
+		"Control_ID": "ESXI-70-000039",
+		"Enabled": false,
+		"Requirement": "Active Directory ESX Admin group membership must not be used when adding ESXi hosts to Active Directory.",
+		"Control_Input": "",
+		"Notes": "Apply after VCF deployment or commissioning host in SDDC manager."
+	},{ 
+		"Control_ID": "ESXI-70-000041",
+		"Enabled": true,
+		"Requirement": "The ESXi host must set a timeout to automatically disable idle shell sessions after two minutes.",
+		"Control_Input": "120",
+		"Notes": ""
+	},{ 
+		"Control_ID": "ESXI-70-000042",
+		"Enabled": true,
+		"Requirement": "The ESXi host must terminate shell services after 10 minutes.",
+		"Control_Input": "600",
+		"Notes": ""
+	},{ 
+		"Control_ID": "ESXI-70-000043",
+		"Enabled": true,
+		"Requirement": "The ESXi host must log out of the console UI after two minutes.",
+		"Control_Input": "120",
+		"Notes": ""
+	},{ 
+		"Control_ID": "ESXI-70-000045",
+		"Enabled": false,
+		"Requirement": "The ESXi host must enable a persistent log location for all locally stored logs.",
+		"Control_Input": "",
+		"Notes": "Apply after a datastore has been created or added to the host"
+	},{ 
+		"Control_ID": "ESXI-70-000046",
+		"Enabled": true,
+		"Requirement": "The ESXi host must configure NTP time synchronization.",
+		"Control_Input": ["services.vmw-sddc.lab","172.16.53.44"],
+		"Notes": ""
+	},{ 
+		"Control_ID": "ESXI-70-000047",
+		"Enabled": true,
+		"Requirement": "The ESXi Image Profile and vSphere Installation Bundle (VIB) Acceptance Levels must be verified.",
+		"Control_Input": "PartnerSupported",
+		"Notes": "VMwareCertified, VMwareAccepted, PartnerSupported, CommunitySupported"
+	},{ 
+		"Control_ID": "ESXI-70-000048",
+		"Enabled": false,
+		"Requirement": "The ESXi host must protect the confidentiality and integrity of transmitted information by isolating vMotion traffic.",
+		"Control_Input": "",
+		"Notes": "Also applied when deploying VCF as a VMware Validate Solution."
+	},{ 
+		"Control_ID": "ESXI-70-000049",
+		"Enabled": false,
+		"Requirement": "The ESXi host must protect the confidentiality and integrity of transmitted information by protecting ESXi management traffic.",
+		"Control_Input": "",
+		"Notes": "Also applied when deploying VCF as a VMware Validate Solution."
+	},{ 
+		"Control_ID": "ESXI-70-000050",
+		"Enabled": false,
+		"Requirement": "The ESXi host must protect the confidentiality and integrity of transmitted information by isolating IP-based storage traffic.",
+		"Control_Input": "",
+		"Notes": "Also applied when deploying VCF as a VMware Validate Solution."
+	},{ 
+		"Control_ID": "ESXI-70-000053",
+		"Enabled": true,
+		"Requirement": "SNMP must be configured properly on the ESXi host.",
+		"Control_Input": "",
+		"Notes": "Disables SNMPv2"
+	},{ 
+		"Control_ID": "ESXI-70-000054",
+		"Enabled": false,
+		"Requirement": "The ESXi host must enable bidirectional CHAP authentication for iSCSI traffic.",
+		"Control_Input": "",
+		"Notes": "Get-VMHost | Get-VMHostHba | Where {$_.Type -eq \"iscsi\"} | Set-VMHostHba -ChapType Required -ChapName \"chapname\" -ChapPassword \"password\" -MutualChapEnabled $true -MutualChapName \"mutualchapname\" -MutualChapPassword \"mutualpassword\""
+	},{ 
+		"Control_ID": "ESXI-70-000055",
+		"Enabled": true,
+		"Requirement": "The ESXi host must disable Inter-VM transparent page sharing.",
+		"Control_Input": "",
+		"Notes": ""
+	},{ 
+		"Control_ID": "ESXI-70-000056",
+		"Enabled": true,
+		"Requirement": "The ESXi host must configure the firewall to restrict access to services running on the host.",
+		"Control_Input": ["10.0.0.0/8","172.16.0.0/12","192.168.0.0/16"],
+		"Notes": ""
+	},{ 
+		"Control_ID": "ESXI-70-000057",
+		"Enabled": true,
+		"Requirement": "The ESXi host must configure the firewall to block network traffic by default.",
+		"Control_Input": "",
+		"Notes": ""
+	},{ 
+		"Control_ID": "ESXI-70-000058",
+		"Enabled": true,
+		"Requirement": "The ESXi host must enable BPDU filter on the host to prevent being locked out of physical switch ports with Portfast and BPDU Guard enabled.",
+		"Control_Input": "",
+		"Notes": ""
+	},{ 
+		"Control_ID": "ESXI-70-000059",
+		"Enabled": false,
+		"Requirement": "All port groups on standard switches must be configured to reject forged transmits.",
+		"Control_Input": "",
+		"Notes": "Also applied when deploying VCF as a VMware Validate Solution."
+	},{ 
+		"Control_ID": "ESXI-70-000060",
+		"Enabled": false,
+		"Requirement": "All port groups on standard switches must be configured to reject guest MAC address changes.",
+		"Control_Input": "",
+		"Notes": "Also applied when deploying VCF as a VMware Validate Solution."
+	},{ 
+		"Control_ID": "ESXI-70-000061",
+		"Enabled": false,
+		"Requirement": "All port groups on standard switches must be configured to reject guest promiscuous mode requests.",
+		"Control_Input": "",
+		"Notes": "Also applied when deploying VCF as a VMware Validate Solution."
+	},{ 
+		"Control_ID": "ESXI-70-000062",
+		"Enabled": true,
+		"Requirement": "Use of the dvFilter network APIs must be restricted.",
+		"Control_Input": "",
+		"Notes": ""
+	},{ 
+		"Control_ID": "ESXI-70-000063",
+		"Enabled": false,
+		"Requirement": "All port groups on standard switches must be configured to a value other than that of the native VLAN.",
+		"Control_Input": "",
+		"Notes": "Also applied when deploying VCF as a VMware Validate Solution."
+	},{ 
+		"Control_ID": "ESXI-70-000064",
+		"Enabled": false,
+		"Requirement": "All port groups on standard switches must not be configured to VLAN 4095 unless Virtual Guest Tagging (VGT) is required.",
+		"Control_Input": "",
+		"Notes": "Also applied when deploying VCF as a VMware Validate Solution."
+	},{ 
+		"Control_ID": "ESXI-70-000065",
+		"Enabled": false,
+		"Requirement": "All port groups on standard switches must not be configured to VLAN values reserved by upstream physical switches.",
+		"Control_Input": "",
+		"Notes": "Also applied when deploying VCF as a VMware Validate Solution."
+	},{ 
+		"Control_ID": "ESXI-70-000070",
+		"Enabled": false,
+		"Requirement": "The ESXi host must not provide root/administrator-level access to CIM-based hardware monitoring tools or other third-party applications.",
+		"Control_Input": "",
+		"Notes": "Remediated manually"
+	},{ 
+		"Control_ID": "ESXI-70-000072",
+		"Enabled": false,
+		"Requirement": "The ESXi host must have all security patches and updates installed.",
+		"Control_Input": "",
+		"Notes": ""
+	},{ 
+		"Control_ID": "ESXI-70-000074",
+		"Enabled": true,
+		"Requirement": "The ESXi host must exclusively enable TLS 1.2 for all endpoints.",
+		"Control_Input": "tlsv1,tlsv1.1,sslv3",
+		"Notes": ""
+	},{ 
+		"Control_ID": "ESXI-70-000076",
+		"Enabled": false,
+		"Requirement": "The ESXi host must enable Secure Boot.",
+		"Control_Input": "",
+		"Notes": "/usr/lib/vmware/secureboot/bin/secureBoot.py -c"
+	},{ 
+		"Control_ID": "ESXI-70-000078",
+		"Enabled": false,
+		"Requirement": "The ESXi host must use DoD-approved certificates.",
+		"Control_Input": "",
+		"Notes": "Apply after VCF deployment or commissioning host in SDDC manager."
+	},{ 
+		"Control_ID": "ESXI-70-000079",
+		"Enabled": true,
+		"Requirement": "The ESXi host must not suppress warnings that the local or remote shell sessions are enabled.",
+		"Control_Input": "",
+		"Notes": ""
+	},{ 
+		"Control_ID": "ESXI-70-000081",
+		"Enabled": true,
+		"Requirement": "The ESXi host must not suppress warnings about unmitigated hyperthreading vulnerabilities.",
+		"Control_Input": "",
+		"Notes": ""
+	},{ 
+		"Control_ID": "ESXI-70-000082",
+		"Enabled": true,
+		"Requirement": "The ESXi host SSH daemon must disable port forwarding.",
+		"Control_Input": "",
+		"Notes": ""
+	},{ 
+		"Control_ID": "ESXI-70-000083",
+		"Enabled": true,
+		"Requirement": "The ESXi host OpenSLP service must be disabled.",
+		"Control_Input": "",
+		"Notes": ""
+	},{ 
+		"Control_ID": "ESXI-70-000084",
+		"Enabled": true,
+		"Requirement": "The ESXi host must enable audit logging.",
+		"Control_Input": "",
+		"Notes": "Audit Record Storage Active: true; Audit Record Storage Capacity: 4100; Audit Record Storage Directory: /scratch/auditLog; Audit Remote Host Enabled: true"
+	},{ 
+		"Control_ID": "ESXI-70-000085",
+		"Enabled": true,
+		"Requirement": "The ESXi host must enable strict x509 verification for SSL syslog endpoints.",
+		"Control_Input": "",
+		"Notes": "Strict X509Compliance: true"
+	},{ 
+		"Control_ID": "ESXI-70-000086",
+		"Enabled": false,
+		"Requirement": "The ESXi host must verify certificates for SSL syslog endpoints.",
+		"Control_Input": "/path/to/cert",
+		"Notes": "Certificate added to /etc/vmware/ssl/castore.pem"
+	},{ 
+		"Control_ID": "ESXI-70-000087",
+		"Enabled": true,
+		"Requirement": "The ESXi host must enable volatile key destruction.",
+		"Control_Input": "",
+		"Notes": ""
+	},{ 
+		"Control_ID": "ESXI-70-000088",
+		"Enabled": true,
+		"Requirement": "The ESXi host must configure a session timeout for the vSphere API.",
+		"Control_Input": "30",
+		"Notes": ""
+	},{ 
+		"Control_ID": "ESXI-70-000089",
+		"Enabled": true,
+		"Requirement": "The ESXi Host Client must be configured with a session timeout.",
+		"Control_Input": "600",
+		"Notes": ""
+	},{ 
+		"Control_ID": "ESXI-70-000090",
+		"Enabled": true,
+		"Requirement": "The ESXi host rhttpproxy daemon must use FIPS 140-2 validated cryptographic modules to protect the confidentiality of remote access sessions.",
+		"Control_Input": "",
+		"Notes": ""
+	},{ 
+		"Control_ID": "ESXI-70-000091",
+		"Enabled": true,
+		"Requirement": "The ESXi host must be configured with an appropriate maximum password age.",
+		"Control_Input": "90",
+		"Notes": ""
+	},{ 
+		"Control_ID": "ESXI-70-000092",
+		"Enabled": true,
+		"Requirement": "The ESXi host must not be configured to override virtual machine configurations.",
+		"Control_Input": "",
+		"Notes": ""
+	},{ 
+		"Control_ID": "ESXI-70-000093",
+		"Enabled": false,
+		"Requirement": "The ESXi host must not be configured to override virtual machine logger settings.",
+		"Control_Input": "",
+		"Notes": ""
+	},{ 
+		"Control_ID": "ESXI-70-000094",
+		"Enabled": false,
+		"Requirement": "The ESXi host must require TPM-based configuration encryption.",
+		"Control_Input": "",
+		"Notes": ""
+	},{ 
+		"Control_ID": "ESXI-70-000095",
+		"Enabled": false,
+		"Requirement": "The ESXi host must implement Secure Boot enforcement.",
+		"Control_Input": "",
+		"Notes": ""
+	},{ 
+		"Control_ID": "ESXI-70-000097",
+		"Enabled": true,
+		"Requirement": "The ESXi CIM service must be disabled.",
+		"Control_Input": "",
+		"Notes": ""
+	},{ 
+		"Control_ID": "ESXI-70-000274",
+		"Enabled": true,
+		"Requirement": "The ESXi host SSH daemon must be configured to only use FIPS 140-2 validated ciphers.",
+		"Control_Input": "",
+		"Notes": "ciphers aes256-gcm@openssh.com,aes128-gcm@openssh.com,aes256-ctr,aes192-ctr,aes128-ctr"
+	}]
+}
