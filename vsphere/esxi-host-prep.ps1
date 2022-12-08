@@ -6,13 +6,34 @@
     License    : Apache-2.0
     
 	.PARAMETER disableCEIP
-	Set this flag to disable CEIP on the ESXi host
+	Disables CEIP
 	.PARAMETER esxicred
     Enter the pscredential variable name to use for authentication to the ESXi host. This can be run before the script for example: $cred = get-pscredential 
 	.PARAMETER hostnames
     Enter the FQDN/IP or list of FQDN/IPs of the ESXi Server(s) to prep for VCF
 	.PARAMETER matchVMNetwork
-	Set this flag to match the vlan set on the VM Network portgroup to the vlan defined on the Management Network portgroup
+	Matches the vlan set on the VM Network portgroup to the vlan defined on the Management Network portgroup
+	.PARAMETER startSSH
+	Starts the SSH service
+	.PARAMETER disableESXCLI
+	Disables the ESXCLI service
+	.PARAMETER rollCerts
+	Rolls the default certificates to match the current FQDN (Requires reboot or services restart to take effect)
+	.PARAMETER rollvmk0
+	Changes the vmk0 MAC address to a dynamic one
+	.PARAMETER disableIPv6
+	Disables IPv6 (Requires reboot to take effect)
+	.PARAMETER restartServices
+	Restarts all the services
+	.PARAMETER restartHost
+	Restarts the host
+	.PARAMETER createAdmin
+	Creates an admin user with the given username and password
+	.PARAMETER updateHost
+	Updates the host software profile to the given profile name at the specified URL
+	.PARAMETER stigFile
+	Applies the enabled STIGs in the specified file
+	
 
 .SYNOPSIS 
     Configures the required settings on an ESXi host for a VCF deployment
