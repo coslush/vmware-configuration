@@ -8,9 +8,9 @@ License    : Apache-2.0
 .PARAMETER disableCEIP
 Disables CEIP
 .PARAMETER esxicred
-    Enter the pscredential variable name to use for authentication to the ESXi host. This can be run before the script for example: $cred = get-pscredential 
+Enter the pscredential variable name to use for authentication to the ESXi host. This can be run before the script for example: $cred = get-pscredential 
 .PARAMETER hostnames
-    Enter the FQDN/IP or list of FQDN/IPs of the ESXi Server(s) to prep for VCF
+Enter the FQDN/IP or list of FQDN/IPs of the ESXi Server(s) to prep for VCF
 .PARAMETER matchVMNetwork
 Matches the vlan set on the VM Network portgroup to the vlan defined on the Management Network portgroup
 .PARAMETER startSSH
@@ -50,10 +50,10 @@ $esxicreds = Get-Credential
 .\esxi-host-prep.ps1 -hostnames "esxi01.mydomain.local" -esxicred $esxicreds -restartHost -updateHost "ESXi-7.0U3g-20328353-standard","https://updaterepo/VMware-ESXi-7.0U3g-20328353-depot/index.xml"
 
 .SYNOPSIS 
-    Configures the required settings on an ESXi host for a VCF deployment
+Configures the required settings on an ESXi host for a VCF deployment
 	
 .DESCRIPTION
-    Configures a number of settings on an ESXi host for a VCF deployment. 
+Configures a number of settings on an ESXi host for a VCF deployment. 
 #>
 
 [CmdletBinding()]
@@ -289,7 +289,9 @@ foreach($hostname in $hostnames){
 	Try {
 		if($updateHost.Count -gt 0){
 			if($updateHost.Count -eq 2){
-				Invoke-SSHCommand -SessionId $esxihostssh.SessionId -Command 'esxcli software profile update -p $updateHost[0] -d $updateHost[1]' -TimeOut 120 #| Out-Null
+				$updateProfile = $updateHost[0]
+				$updateURL = $updateHost[1]
+				Invoke-SSHCommand -SessionId $esxihostssh.SessionId -Command "esxcli software profile update -p $updateProfile -d $updateURL" -TimeOut 120 | Out-Null
 				Write-Host "...ESXi host update applied!" -ForegroundColor Green
 				Write-Host
 			}
@@ -987,7 +989,7 @@ foreach($hostname in $hostnames){
 			}
 		}
 		Catch {
-			Write-Error "Failed to disconnect from $hostname"
+			Write-Error "Failed to disconnect SSH from $hostname"
 			Write-Error $_.Exception
 			Exit -1
 		}
@@ -1021,7 +1023,7 @@ foreach($hostname in $hostnames){
 		Disconnect-VIServer $hostname -Confirm:$false
 	}
 	Catch {
-		Write-Error "...Failed to disconnect from $hostname"
+		Write-Error "...Failed to disconnect HTTPS from $hostname"
 		Write-Error $_.Exception
 		Exit -1
 	}
