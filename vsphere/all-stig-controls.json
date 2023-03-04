@@ -121,13 +121,13 @@
 		"Notes": ""
 	},{ 
 		"Control_ID": "ESXI-70-000026",
-		"Enabled": false,
+		"Enabled": true,
 		"Requirement": "The ESXi host SSH daemon must set a timeout count on idle sessions.",
 		"Control_Input": "",
 		"Notes": ""
 	},{ 
 		"Control_ID": "ESXI-70-000027",
-		"Enabled": false,
+		"Enabled": true,
 		"Requirement": "The ESXi host SSH daemon must set a timeout interval on idle sessions.",
 		"Control_Input": "",
 		"Notes": ""
@@ -259,13 +259,13 @@
 		"Notes": ""
 	},{ 
 		"Control_ID": "ESXI-70-000056",
-		"Enabled": false,
+		"Enabled": true,
 		"Requirement": "The ESXi host must configure the firewall to restrict access to services running on the host.",
 		"Control_Input": ["10.0.0.0/8","172.16.0.0/12","192.168.0.0/16"],
 		"Notes": ""
 	},{ 
 		"Control_ID": "ESXI-70-000057",
-		"Enabled": false,
+		"Enabled": true,
 		"Requirement": "The ESXi host must configure the firewall to block network traffic by default.",
 		"Control_Input": "",
 		"Notes": ""
