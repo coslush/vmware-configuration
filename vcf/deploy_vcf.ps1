@@ -1,16 +1,18 @@
 [CmdletBinding()]
 param (
     [Parameter(Mandatory=$true,ParameterSetName="cloudbuilderSpec_File")]
-    [string]$cloudbuilderSpec_File
+    [string]$cloudbuilderSpec_File,
+    [Parameter(Mandatory=$true,ParameterSetName="vcfSpec_File")]
+    [string]$vcfSpec_File
 )
 
-Write-Host "Ingesting the Cloud Builder deployment specification" -ForegroundColor Green
+Write-Host "Ingest the Cloud Builder deployment specification" -ForegroundColor Green
 $cloudbuilderSpec = Get-Content -Raw -Path $cloudbuilderSpec_File | ConvertFrom-Json
 
-Write-Host "Connecting to the Cloud Builder vCenter" -ForegroundColor Green
+Write-Host "Connect to the Cloud Builder vCenter" -ForegroundColor Green
 Connect-VIServer $cloudbuilderSpec.vCenterFQDN
 
-Write-Host "Building the Cloud Builder OVF configuration" -ForegroundColor Green
+Write-Host "Build the Cloud Builder OVF configuration" -ForegroundColor Green
 $cloudbuilder_ovfconfig = Get-OvfConfiguration $cloudbuilderSpec.OVALocation
 $cloudbuilder_ovfconfig.Common.guestinfo.ADMIN_USERNAME.Value = "admin"
 $cloudbuilder_ovfconfig.Common.guestinfo.ADMIN_PASSWORD.Value = $cloudbuilderSpec.adminPassword
@@ -28,12 +30,21 @@ $cloudbuilder_folder = $cloudbuilderSpec.deploymentFolder
 $cloudbuilder_ds = $cloudbuilderSpec.datastore
 $cloudbuilder_vmname = $cloudbuilderSpec.hostname
 
-Write-Host "Deploying the Cloud Builder appliance" -ForegroundColor Green
+Write-Host "Deploy the Cloud Builder appliance" -ForegroundColor Green
 $cloudbuilder_vm = Import-VApp -Source $cloudbuilderSpec.OVALocation -OvfConfiguration $cloudbuilder_ovfconfig -Name $cloudbuilder_vmname -VMHost $cloudbuilder_host -Location $cloudbuilder_rp -InventoryLocation $cloudbuilder_folder -Datastore $cloudbuilder_ds -Confirm:$false
 
-Write-Host "Starting the Cloud Builder appliance" -ForegroundColor Green
+Write-Host "Start the Cloud Builder appliance" -ForegroundColor Green
 Start-VM $cloudbuilder_vm
 
-Write-Host "Disconnecting from the Cloud Builder vCenter" -ForegroundColor Green
+Write-Host "Disconnect from the Cloud Builder vCenter" -ForegroundColor Green
 Disconnect-VIServer $cloudbuilderSpec.vCenterFQDN -Confirm:$false
 
+Write-Host "Wait for Cloud Builder to come up" -ForegroundColor Green
+
+Write-Host "Ingest the VCF deployment specification" -ForegroundColor Green
+$vcfSpec = Get-Content -Raw -Path $vcfSpec_File | ConvertFrom-Json
+$vcfSpec_Compressed = $vcfSpec | ConvertTo-Json -Compress -Depth 6
+
+Write-Host "Validate the VCF deployment specification" -ForegroundColor Green
+
+Write-Host "Wait for the VCF deployment specification validation result" -ForegroundColor Green
