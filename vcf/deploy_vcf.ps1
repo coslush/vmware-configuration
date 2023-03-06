@@ -1,8 +1,8 @@
 [CmdletBinding()]
 param (
-    [Parameter(Mandatory=$true,ParameterSetName="cloudbuilderSpec_File")]
+    [Parameter(Mandatory=$true)]
     [string]$cloudbuilderSpec_File,
-    [Parameter(Mandatory=$true,ParameterSetName="vcfSpec_File")]
+    [Parameter(Mandatory=$true)]
     [string]$vcfSpec_File
 )
 
@@ -31,7 +31,7 @@ $cloudbuilder_ds = $cloudbuilderSpec.datastore
 $cloudbuilder_vmname = $cloudbuilderSpec.hostname
 
 Write-Host "Deploy the Cloud Builder appliance" -ForegroundColor Green
-$cloudbuilder_vm = Import-VApp -Source $cloudbuilderSpec.OVALocation -OvfConfiguration $cloudbuilder_ovfconfig -Name $cloudbuilder_vmname -VMHost $cloudbuilder_host -Location $cloudbuilder_rp -InventoryLocation $cloudbuilder_folder -Datastore $cloudbuilder_ds -Confirm:$false
+$cloudbuilder_vm = Import-VApp -Source $cloudbuilderSpec.OVALocation -OvfConfiguration $cloudbuilder_ovfconfig -Name $cloudbuilderSpec.vmName -VMHost $cloudbuilder_host -Location $cloudbuilder_rp -InventoryLocation $cloudbuilder_folder -Datastore $cloudbuilder_ds -Confirm:$false
 
 Write-Host "Start the Cloud Builder appliance" -ForegroundColor Green
 Start-VM $cloudbuilder_vm
@@ -40,11 +40,22 @@ Write-Host "Disconnect from the Cloud Builder vCenter" -ForegroundColor Green
 Disconnect-VIServer $cloudbuilderSpec.vCenterFQDN -Confirm:$false
 
 Write-Host "Wait for Cloud Builder to come up" -ForegroundColor Green
+do { 
+    Start-Sleep -Seconds 5 
+} until (Test-Connection $cloudbuilderSpec.ipAddress -Quiet -Count 1)
 
 Write-Host "Ingest the VCF deployment specification" -ForegroundColor Green
 $vcfSpec = Get-Content -Raw -Path $vcfSpec_File | ConvertFrom-Json
 $vcfSpec_Compressed = $vcfSpec | ConvertTo-Json -Compress -Depth 6
 
 Write-Host "Validate the VCF deployment specification" -ForegroundColor Green
+$validationURL = "https://$($cloudbuilderSpec.ipAddress)/v1/sddcs/validations"
+Write-Host $validationURL
+$validationCreds = "admin:$($cloudbuilderSpec.adminPassword)"
+Write-Host $validationCreds
+curl -k $validationURL -i -u $validationCreds -X POST -H 'Content-Type: application/json' -H 'Accept: application/json' -d $vcfSpec_Compressed
 
 Write-Host "Wait for the VCF deployment specification validation result" -ForegroundColor Green
+do { 
+    Start-Sleep -Seconds 30
+} until (curl -k $validationURL -i -u $validationCreds -X GET -H 'Content-Type: application/json' -H 'Accept: application/json')
