@@ -373,7 +373,7 @@
 		"Notes": ""
 	},{ 
 		"Control_ID": "ESXI-70-000084",
-		"Enabled": true,
+		"Enabled": false,
 		"Requirement": "The ESXi host must enable audit logging.",
 		"Control_Input": "",
 		"Notes": "Audit Record Storage Active: true; Audit Record Storage Capacity: 4100; Audit Record Storage Directory: /scratch/auditLog; Audit Remote Host Enabled: true"
