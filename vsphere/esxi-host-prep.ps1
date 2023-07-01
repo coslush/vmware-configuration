@@ -979,6 +979,232 @@ foreach($hostname in $hostnames){
 								Write-Host "...configuration applied." -ForegroundColor Green
 								Break 
 							}
+							"ESXI-80-000005" { 
+								Write-Host "   ESXI-80-000005" -NoNewLine
+								Get-VMHost -Name $hostname | Get-AdvancedSetting -Name Security.AccountLockFailures | Set-AdvancedSetting -Value $stigItem.Control_Input -Confirm:$false | Out-Null
+								Write-Host "...configuration applied." -ForegroundColor Green
+								Break 
+							}
+							"ESXI-80-000006" { 
+								Write-Host "   ESXI-80-000006" -NoNewLine
+								Get-VMHost -Name $hostname | Get-AdvancedSetting -Name Annotations.WelcomeMessage | Set-AdvancedSetting -Value $stigItem.Control_Input -Confirm:$false | Out-Null
+								Write-Host "...configuration applied." -ForegroundColor Green
+								Break 
+							}
+							"ESXI-80-000008" { 
+								Write-Host "   ESXI-80-000008" -NoNewLine
+								$vmhost = Get-VMHost -Name $hostname | Get-View
+								$lockdown = Get-View $vmhost.ConfigManager.HostAccessManager
+								$lockdown.ChangeLockdownMode($stigItem.Control_Input)
+								Write-Host "...configuration applied." -ForegroundColor Green
+								Break 
+							}
+							"ESXI-80-000010" { 
+								Write-Host "   ESXI-80-000010" -NoNewLine
+								Get-VMHost -Name $hostname | Get-AdvancedSetting -Name UserVars.HostClientSessionTimeout | Set-AdvancedSetting -Value $stigItem.Control_Input -Confirm:$false | Out-Null
+								Write-Host "...configuration applied." -ForegroundColor Green
+								Break 
+							}
+							"ESXI-80-000014" { 
+								Write-Host "   ESXI-80-000014" -NoNewLine
+								$esxiHost = Get-VMHost -Name $hostname
+								$esxcli = Get-EsxCli -v2 -VMHost $esxiHost
+								$arguments = $esxcli.system.security.fips140.ssh.set.CreateArgs()
+								$arguments.enable = $true
+								$esxcli.system.security.fips140.ssh.set.Invoke($arguments) | Out-Null
+								Write-Host "...configuration applied." -ForegroundColor Green
+								Break 
+							}
+							"ESXI-80-000015" { 
+								Write-Host "   ESXI-80-000015" -NoNewLine
+								Get-VMHost -Name $hostname | Get-AdvancedSetting -Name Config.HostAgent.log.level | Set-AdvancedSetting -Value $stigItem.Control_Input -Confirm:$false | Out-Null
+								Write-Host "...configuration applied." -ForegroundColor Green
+								Break 
+							}
+							"ESXI-80-000035" { 
+								Write-Host "   ESXI-80-000035" -NoNewLine
+								Get-VMHost -Name $hostname | Get-AdvancedSetting -Name Security.PasswordQualityControl | Set-AdvancedSetting -Value $stigItem.Control_Input -Confirm:$false | Out-Null
+								Write-Host "...configuration applied." -ForegroundColor Green
+								Break 
+							}
+							"ESXI-80-000043" { 
+								Write-Host "   ESXI-80-000043" -NoNewLine
+								Get-VMHost -Name $hostname | Get-AdvancedSetting -Name Security.PasswordHistory | Set-AdvancedSetting -Value $stigItem.Control_Input -Confirm:$false | Out-Null
+								Write-Host "...configuration applied." -ForegroundColor Green
+								Break 
+							}
+							"ESXI-80-000047" { 
+								Write-Host "   ESXI-80-000047" -NoNewLine
+								Get-VMHost -Name $hostname | Get-AdvancedSetting -Name Config.HostAgent.plugins.solo.enableMob | Set-AdvancedSetting -Value $false -Confirm:$false | Out-Null
+								Write-Host "...configuration applied." -ForegroundColor Green
+								Break 
+							}
+							"ESXI-80-000049" { 
+								Write-Host "   ESXI-80-000049" -NoNewLine
+								Get-VMHost -Name $hostname | Get-VMHostAuthentication | Set-VMHostAuthentication -JoinDomain -Domain $stigItem.Control_Input[0] -User $stigItem.Control_Input[1] -Password $stigItem.Control_Input[2] -Confirm:$false | Out-Null
+								Write-Host "...configuration applied." -ForegroundColor Yellow
+								Break 
+							}
+							"ESXI-80-000052" { 
+								Write-Host "   ESXI-80-000052" -NoNewLine
+								# make sure /etc/ssh/sshd_config has "IgnoreRhosts" set to "yes"
+								Invoke-SSHCommand -SessionId $esxihostssh.SessionId -Command "sed -i 's/^#IgnoreRhosts/d' /etc/ssh/sshd_config" -TimeOut 30 | Out-Null
+								Invoke-SSHCommand -SessionId $esxihostssh.SessionId -Command "sed -i 's/^IgnoreRhosts/#IgnoreRhosts/' /etc/ssh/sshd_config" -TimeOut 30 | Out-Null
+								Invoke-SSHCommand -SessionId $esxihostssh.SessionId -Command "echo 'IgnoreRhosts yes' >> /etc/ssh/sshd_config" -TimeOut 30 | Out-Null
+								Write-Host "...configuration applied." -ForegroundColor Green
+								Break 
+							}
+							"ESXI-80-000068" { 
+								Write-Host "   ESXI-80-000068" -NoNewLine
+								Get-VMHost -Name $hostname | Get-AdvancedSetting -Name UserVars.ESXiShellInteractiveTimeOut | Set-AdvancedSetting -Value $stigItem.Control_Input -Confirm:$false | Out-Null
+								Write-Host "...configuration applied." -ForegroundColor Green
+								Break 
+							}
+							"ESXI-80-000085" { 
+								Write-Host "   ESXI-80-000085" -NoNewLine
+								$esxcli = Get-EsxCli -v2 -VMHost $esxiHost
+								$arguments = $esxcli.system.settings.encryption.set.CreateArgs()
+								$arguments.requiresecureboot = $true
+								$esxcli.system.settings.encryption.set.Invoke($arguments) | Out-Null
+								Write-Host "...configuration applied." -ForegroundColor Green
+								Break 
+							}
+							"ESXI-80-000094" { 
+								Write-Host "   ESXI-80-000094" -NoNewLine
+								Write-Host "...configuration skipped." -ForegroundColor Yellow
+								Break 
+							}
+							"ESXI-80-000111" { 
+								Write-Host "   ESXI-80-000111" -NoNewLine
+								Get-VMHost -Name $hostname | Get-AdvancedSetting -Name Security.AccountUnlockTime | Set-AdvancedSetting -Value $stigItem.Control_Input -Confirm:$false | Out-Null
+								Write-Host "...configuration applied." -ForegroundColor Green
+								Break 
+							}
+							"ESXI-80-000113" { 
+								Write-Host "   ESXI-80-000113" -NoNewLine
+								Get-VMHost -Name $hostname | Get-AdvancedSetting -Name Syslog.global.auditRecord.storageCapacity | Set-AdvancedSetting -Value $stigItem.Control_Input -Confirm:$false | Out-Null
+								Write-Host "...configuration applied." -ForegroundColor Green
+								Break 
+							}
+							"ESXI-80-000114" { 
+								Write-Host "   ESXI-80-000114" -NoNewLine
+								Get-VMHost -Name $hostname | Get-AdvancedSetting -Name Syslog.global.logHost | Set-AdvancedSetting -Value $stigItem.Control_Input -Confirm:$false | Out-Null
+								Write-Host "...configuration applied." -ForegroundColor Green
+								Break 
+							}
+							"ESXI-80-000124" { 
+								Write-Host "   ESXI-80-000124" -NoNewLine
+								
+								# Set the NTP servers
+								if($stigItem.Control_Input.Count -gt 0){
+									$currNTP = Get-VMHostNtpServer -VMHost $vmhost 
+									if ($currNTP -ne $null){
+										Remove-VMHostNtpServer -VMHost $vmhost $currNTP -Confirm:$false | Out-Null
+									}
+									foreach($ntpServer in $stigItem.Control_Input){
+										Get-VMHost -Name $hostname | Add-VMHostNtpServer $ntpServer | Out-Null
+									}
+								}
+								
+								# Set the NTP service policy to start on boot
+								Get-VMHost -Name $hostname | Get-VMHostService | Where {$_.Label -eq "NTP Daemon"} | Set-VMHostService -Policy On | Out-Null
+								
+								# Start the NTP service
+								Get-VMHost -Name $hostname | Get-VMHostService | Where {$_.Label -eq "NTP Daemon"} | Start-VMHostService -Confirm:$false | Out-Null
+								Write-Host "...configuration applied." -ForegroundColor Green
+								Break 
+							}
+							"ESXI-80-000133" { 
+								Write-Host "   ESXI-80-000133" -NoNewLine
+								$esxcli = Get-EsxCli -v2 -VMHost $esxiHost
+								$arguments = $esxcli.software.acceptance.set.CreateArgs()
+								$arguments.level = $stigItem.Control_Input
+								$esxcli.software.acceptance.set.Invoke($arguments) | Out-Null
+								Write-Host "...configuration applied." -ForegroundColor Green
+								Break 
+							}
+							"ESXI-80-000145" { 
+								Write-Host "   ESXI-80-000145" -NoNewLine
+								Get-VMHost -Name $hostname | Get-VMHostHba | Where {$_.Type -eq "iscsi"} | Set-VMHostHba -ChapType Required -ChapName $stigItem.Control_Input[0] -ChapPassword $stigItem.Control_Input[1] -MutualChapEnabled $true -MutualChapName $stigItem.Control_Input[2] -MutualChapPassword $stigItem.Control_Input[3] -Confirm:$false | Out-Null
+								Write-Host "...configuration applied." -ForegroundColor Yellow
+								Break 
+							}
+							"ESXI-80-000160" { 
+								Write-Host "   ESXI-80-000160" -NoNewLine
+								Write-Host "...configuration skipped." -ForegroundColor Yellow
+								Break 
+							}
+							"ESXI-80-000161" { 
+								Write-Host "   ESXI-80-000161" -NoNewLine
+								Get-VMHost -Name $hostname | Get-AdvancedSetting -Name UserVars.ESXiVPsDisabledProtocols | Set-AdvancedSetting -Value $stigItem.Control_Input -Confirm:$false | Out-Null
+								Write-Host "...configuration applied." -ForegroundColor Green
+								Break 
+							}
+							"ESXI-80-000187" { 
+								Write-Host "   ESXI-80-000187" -NoNewLine
+								# make sure /etc/ssh/sshd_config has "Ciphers" set to "aes256-gcm@openssh.com,aes128-gcm@openssh.com,aes256-ctr,aes192-ctr,aes128-ctr"
+								Invoke-SSHCommand -SessionId $esxihostssh.SessionId -Command "sed -i 's/^#Ciphers/d' /etc/ssh/sshd_config" -TimeOut 30 | Out-Null
+								Invoke-SSHCommand -SessionId $esxihostssh.SessionId -Command "sed -i 's/^Ciphers/#Ciphers/' /etc/ssh/sshd_config" -TimeOut 30 | Out-Null
+								Invoke-SSHCommand -SessionId $esxihostssh.SessionId -Command "echo 'Ciphers aes256-gcm@openssh.com,aes256-ctr' >> /etc/ssh/sshd_config" -TimeOut 30 | Out-Null
+								Write-Host "...configuration applied." -ForegroundColor Green
+								Break 
+							}
+							"ESXI-80-000189" { 
+								Write-Host "   ESXI-80-000189" -NoNewLine
+								Get-VMHost -Name $hostname | Get-AdvancedSetting -Name DCUI.Access | Set-AdvancedSetting -Value $stigItem.Control_Input -Confirm:$false | Out-Null
+								Write-Host "...configuration applied." -ForegroundColor Green
+								Break
+							}
+							"ESXI-80-000191" { 
+								Write-Host "   ESXI-80-000191" -NoNewLine
+								Get-VMHost -Name $hostname | Get-AdvancedSetting -Name Config.Etc.issue | Set-AdvancedSetting -Value $stigItem.Control_Input -Confirm:$false | Out-Null
+								Write-Host "...configuration applied." -ForegroundColor Green
+								Break 
+							}
+							"ESXI-80-000192" { 
+								Write-Host "   ESXI-80-000192" -NoNewLine
+								Invoke-SSHCommand -SessionId $esxihostssh.SessionId -Command "sed -i 's/^#Banner/d' /etc/ssh/sshd_config" -TimeOut 60 | Out-Null
+								Invoke-SSHCommand -SessionId $esxihostssh.SessionId -Command "sed -i 's/^Banner/#Banner/' /etc/ssh/sshd_config" -TimeOut 60 | Out-Null
+								Invoke-SSHCommand -SessionId $esxihostssh.SessionId -Command "echo 'Banner /etc/issue' >> /etc/ssh/sshd_config" -TimeOut 60 | Out-Null
+								Write-Host "...configuration applied." -ForegroundColor Green
+								Break 
+							}
+							"ESXI-80-000193" { 
+								Write-Host "   ESXI-80-000193" -NoNewLine
+								Get-VMHost -Name $hostname | Get-VMHostService | Where {$_.Label -eq "SSH"} | Stop-VMHostService -Confirm:$false | Out-Null
+								Get-VMHost -Name $hostname | Get-VMHostService | Where {$_.Label -eq "SSH"} | Set-VMHostService -Policy Off | Out-Null
+								Write-Host "...configuration applied." -ForegroundColor Green
+								Break 
+							}
+							"ESXI-80-000194" { 
+								Write-Host "   ESXI-80-000194" -NoNewLine
+								Get-VMHost -Name $hostname | Get-VMHostService | Where {$_.Label -eq "ESXi Shell"} | Stop-VMHostService -Confirm:$false | Out-Null
+								Get-VMHost -Name $hostname | Get-VMHostService | Where {$_.Label -eq "ESXi Shell"} | Set-VMHostService -Policy Off | Out-Null
+								Write-Host "...configuration applied." -ForegroundColor Green
+								Break 
+							}
+							"ESXI-80-000195" { 
+								Write-Host "   ESXI-80-000195" -NoNewLine
+								Get-VMHost -Name $hostname | Get-AdvancedSetting -Name UserVars.ESXiShellTimeOut | Set-AdvancedSetting -Value $stigItem.Control_Input -Confirm:$false | Out-Null
+								Write-Host "...configuration applied." -ForegroundColor Green
+								Break 
+							}
+							"ESXI-80-000196" { 
+								Write-Host "   ESXI-80-000196" -NoNewLine
+								Get-VMHost -Name $hostname | Get-AdvancedSetting -Name UserVars.DcuiTimeOut | Set-AdvancedSetting -Value $stigItem.Control_Input -Confirm:$false | Out-Null
+								Write-Host "...configuration applied." -ForegroundColor Green
+								Break 
+							}
+							"ESXI-80-000198" { 
+								Write-Host "   ESXI-80-000198" -NoNewLine
+								Write-Host "...configuration skipped." -ForegroundColor Yellow
+								Break 
+							}
+							"ESXI-80-000199" { 
+								Write-Host "   ESXI-80-000199" -NoNewLine
+								Write-Host "...configuration skipped." -ForegroundColor Yellow
+								Break 
+							}
 							Default {
 								Write-Host "   Unrecognized option: " $stigItem.Control_ID -ForegroundColor Yellow
 							}
