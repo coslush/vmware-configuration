@@ -647,5 +647,269 @@
 		"Requirement": "The ESXi host must protect the confidentiality and integrity of transmitted information by isolating IP-based storage traffic.",
 		"Control_Input": "",
 		"Notes": "Applied when deploying VCF as a VMware Validate Solution."
+	},{ 
+		"Control_ID": "ESXI-80-000201",
+		"Enabled": false,
+		"Requirement": "The ESXi host lockdown mode exception users list must be verified.",
+		"Control_Input": "root",
+		"Notes": "Apply after VCF deployment or commissioning host in SDDC manager."
+	},{ 
+		"Control_ID": "ESXI-80-000202",
+		"Enabled": true,
+		"Requirement": "The ESXi host Secure Shell (SSH) daemon must not allow host-based authentication.",
+		"Control_Input": "",
+		"Notes": ""
+	},{ 
+		"Control_ID": "ESXI-80-000203",
+		"Enabled": true,
+		"Requirement": "The ESXi host Secure Shell (SSH) daemon must not allow authentication using an empty password.",
+		"Control_Input": "",
+		"Notes": ""
+	},{ 
+		"Control_ID": "ESXI-80-000204",
+		"Enabled": true,
+		"Requirement": "The ESXi host Secure Shell (SSH) daemon must not permit user environment settings.",
+		"Control_Input": "",
+		"Notes": ""
+	},{ 
+		"Control_ID": "ESXI-80-000205",
+		"Enabled": true,
+		"Requirement": "The ESXi host Secure Shell (SSH) daemon must perform strict mode checking of home directory configuration files.",
+		"Control_Input": "",
+		"Notes": ""
+	},{ 
+		"Control_ID": "ESXI-80-000206",
+		"Enabled": true,
+		"Requirement": "The ESXi host Secure Shell (SSH) daemon must not allow compression.",
+		"Control_Input": "",
+		"Notes": ""
+	},{ 
+		"Control_ID": "ESXI-80-000207",
+		"Enabled": true,
+		"Requirement": "The ESXi host Secure Shell (SSH) daemon must be configured to not allow gateway ports.",
+		"Control_Input": "",
+		"Notes": ""
+	},{ 
+		"Control_ID": "ESXI-80-000208",
+		"Enabled": true,
+		"Requirement": "The ESXi host Secure Shell (SSH) daemon must be configured to not allow X11 forwarding.",
+		"Control_Input": "",
+		"Notes": ""
+	},{ 
+		"Control_ID": "ESXI-80-000209",
+		"Enabled": true,
+		"Requirement": "The ESXi host Secure Shell (SSH) daemon must not permit tunnels.",
+		"Control_Input": "",
+		"Notes": ""
+	},{ 
+		"Control_ID": "ESXI-80-000210",
+		"Enabled": false,
+		"Requirement": "The ESXi host Secure Shell (SSH) daemon must set a timeout count on idle sessions.",
+		"Control_Input": "",
+		"Notes": ""
+	},{ 
+		"Control_ID": "ESXI-80-000210",
+		"Enabled": false,
+		"Requirement": "The ESXi host Secure Shell (SSH) daemon must set a timeout interval on idle sessions.",
+		"Control_Input": "",
+		"Notes": ""
+	},{ 
+		"Control_ID": "ESXI-80-000212",
+		"Enabled": true,
+		"Requirement": "The ESXi host must disable Simple Network Management Protocol (SNMP) v1 and v2c.",
+		"Control_Input": "",
+		"Notes": "Disables SNMP v1 and v2c"
+	},{ 
+		"Control_ID": "ESXI-80-000213",
+		"Enabled": true,
+		"Requirement": "The ESXi host must disable Inter-Virtual Machine (VM) Transparent Page Sharing.",
+		"Control_Input": "",
+		"Notes": ""
+	},{ 
+		"Control_ID": "ESXI-80-000214",
+		"Enabled": false,
+		"Requirement": "The ESXi host must configure the firewall to block network traffic by default.",
+		"Control_Input": "",
+		"Notes": ""
+	},{ 
+		"Control_ID": "ESXI-80-000215",
+		"Enabled": true,
+		"Requirement": "The ESXi host must enable Bridge Protocol Data Units (BPDU) filter on the host to prevent being locked out of physical switch ports with Portfast and BPDU Guard enabled.",
+		"Control_Input": "",
+		"Notes": ""
+	},{ 
+		"Control_ID": "ESXI-80-000216",
+		"Enabled": false,
+		"Requirement": "The ESXi host must configure virtual switch security policies to reject forged transmits.",
+		"Control_Input": "",
+		"Notes": "Also applied when deploying VCF as a VMware Validate Solution."
+	},{ 
+		"Control_ID": "ESXI-80-000217",
+		"Enabled": false,
+		"Requirement": "The ESXi host must configure virtual switch security policies to reject Media Access Control (MAC) address changes.",
+		"Control_Input": "",
+		"Notes": "Also applied when deploying VCF as a VMware Validate Solution."
+	},{ 
+		"Control_ID": "ESXI-80-000218",
+		"Enabled": false,
+		"Requirement": "The ESXi host must configure virtual switch security policies to reject promiscuous mode requests.",
+		"Control_Input": "",
+		"Notes": "Also applied when deploying VCF as a VMware Validate Solution."
+	},{ 
+		"Control_ID": "ESXI-80-000219",
+		"Enabled": true,
+		"Requirement": "The ESXi host must restrict use of the dvFilter network application programming interface (API).",
+		"Control_Input": "",
+		"Notes": ""
+	},{ 
+		"Control_ID": "ESXI-80-000220",
+		"Enabled": false,
+		"Requirement": "The ESXi host must restrict the use of Virtual Guest Tagging (VGT) on standard switches.",
+		"Control_Input": "",
+		"Notes": ""
+	},{ 
+		"Control_ID": "ESXI-80-000221",
+		"Enabled": false,
+		"Requirement": "The ESXi host must have all security patches and updates installed.",
+		"Control_Input": "",
+		"Notes": ""
+	},{ 
+		"Control_ID": "ESXI-80-000222",
+		"Enabled": true,
+		"Requirement": "The ESXi host must not suppress warnings that the local or remote shell sessions are enabled.",
+		"Control_Input": "",
+		"Notes": ""
+	},{ 
+		"Control_ID": "ESXI-80-000223",
+		"Enabled": true,
+		"Requirement": "The ESXi host must not suppress warnings about unmitigated hyperthreading vulnerabilities.",
+		"Control_Input": "",
+		"Notes": ""
+	},{ 
+		"Control_ID": "ESXI-80-000224",
+		"Enabled": false,
+		"Requirement": "The ESXi host must verify certificates for SSL syslog endpoints.",
+		"Control_Input": "/path/to/cert",
+		"Notes": "Certificate added to /etc/vmware/ssl/castore.pem"
+	},{ 
+		"Control_ID": "ESXI-80-000225",
+		"Enabled": true,
+		"Requirement": "The ESXi host must enable volatile key destruction.",
+		"Control_Input": "",
+		"Notes": ""
+	},{ 
+		"Control_ID": "ESXI-80-000226",
+		"Enabled": true,
+		"Requirement": "The ESXi host must configure a session timeout for the vSphere API.",
+		"Control_Input": "30",
+		"Notes": ""
+	},{ 
+		"Control_ID": "ESXI-80-000227",
+		"Enabled": true,
+		"Requirement": "The ESXi host must be configured with an appropriate maximum password age.",
+		"Control_Input": "90",
+		"Notes": ""
+	},{ 
+		"Control_ID": "ESXI-80-000228",
+		"Enabled": true,
+		"Requirement": "The ESXi Common Information Model (CIM) service must be disabled.",
+		"Control_Input": "",
+		"Notes": ""
+	},{ 
+		"Control_ID": "ESXI-80-000229",
+		"Enabled": false,
+		"Requirement": "The ESXi host must use DOD-approved certificates.",
+		"Control_Input": "",
+		"Notes": ""
+	},{ 
+		"Control_ID": "ESXI-80-000230",
+		"Enabled": true,
+		"Requirement": "The ESXi host Secure Shell (SSH) daemon must disable port forwarding.",
+		"Control_Input": "",
+		"Notes": ""
+	},{ 
+		"Control_ID": "ESXI-80-000231",
+		"Enabled": true,
+		"Requirement": "The ESXi host OpenSLP service must be disabled.",
+		"Control_Input": "",
+		"Notes": ""
+	},{ 
+		"Control_ID": "ESXI-80-000232",
+		"Enabled": true,
+		"Requirement": "The ESXi host must enable audit logging.",
+		"Control_Input": "",
+		"Notes": ""
+	},{ 
+		"Control_ID": "ESXI-80-000233",
+		"Enabled": true,
+		"Requirement": "The ESXi host must off-load audit records via syslog.",
+		"Control_Input": "",
+		"Notes": ""
+	},{ 
+		"Control_ID": "ESXI-80-000234",
+		"Enabled": true,
+		"Requirement": "The ESXi host must enable strict x509 verification for SSL syslog endpoints.",
+		"Control_Input": "",
+		"Notes": ""
+	},{ 
+		"Control_ID": "ESXI-80-000235",
+		"Enabled": true,
+		"Requirement": "The ESXi host must forward audit records containing information to establish what type of events occurred.",
+		"Control_Input": "info",
+		"Notes": ""
+	},{ 
+		"Control_ID": "ESXI-80-000236",
+		"Enabled": true,
+		"Requirement": "The ESXi host must not be configured to override virtual machine (VM) configurations.",
+		"Control_Input": "",
+		"Notes": ""
+	},{ 
+		"Control_ID": "ESXI-80-000237",
+		"Enabled": true,
+		"Requirement": "The ESXi host must not be configured to override virtual machine (VM) logger settings.",
+		"Control_Input": "",
+		"Notes": ""
+	},{ 
+		"Control_ID": "ESXI-80-000238",
+		"Enabled": false,
+		"Requirement": "The ESXi host must require TPM-based configuration encryption.",
+		"Control_Input": "",
+		"Notes": ""
+	},{ 
+		"Control_ID": "ESXI-80-000240",
+		"Enabled": false,
+		"Requirement": "The ESXi host when using Host Profiles and/or Auto Deploy must use the vSphere Authentication Proxy to protect passwords when adding themselves to Active Directory.",
+		"Control_Input": "",
+		"Notes": ""
+	},{ 
+		"Control_ID": "ESXI-80-000241",
+		"Enabled": true,
+		"Requirement": "The ESXi host must not use the default Active Directory ESX Admin group.",
+		"Control_Input": "ESXi AD Admins Group",
+		"Notes": ""
+	},{ 
+		"Control_ID": "ESXI-80-000243",
+		"Enabled": true,
+		"Requirement": "The ESXi host must configure a persistent log location for all locally stored logs.",
+		"Control_Input": "New Log Location",
+		"Notes": ""
+	},{ 
+		"Control_ID": "ESXI-80-000244",
+		"Enabled": true,
+		"Requirement": "The ESXi host must enforce the exclusive running of executables from approved VIBs.",
+		"Control_Input": "",
+		"Notes": ""
+	},{ 
+		"Control_ID": "ESXI-80-000245",
+		"Enabled": true,
+		"Requirement": "The ESXi host must use sufficient entropy for cryptographic operations.",
+		"Control_Input": "",
+		"Notes": ""
+	},{ 
+		"Control_ID": "ESXI-80-000246",
+		"Enabled": true,
+		"Requirement": "The ESXi host must not enable log filtering.",
+		"Control_Input": "",
+		"Notes": ""
 	}]
 }
