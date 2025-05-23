@@ -561,7 +561,7 @@
 		"Control_ID": "ESXI-80-000124",
 		"Enabled": true,
 		"Requirement": "The ESXi host must synchronize internal information system clocks to an authoritative time source.",
-		"Control_Input": ["172.16.53.44"],
+		"Control_Input": ["10.100.128.53","10.100.144.53"],
 		"Notes": "ntp"
 	},{ 
 		"Control_ID": "ESXI-80-000133",

@@ -2,7 +2,7 @@
 .NOTES 
 File Name  : esxi-host-prep.ps1 
 Author     : coslush
-Version    : 1.0
+Version    : 1.1
 License    : Apache-2.0
     
 .PARAMETER disableCEIP
@@ -55,7 +55,6 @@ Configures the required settings on an ESXi host for a VCF deployment
 .DESCRIPTION
 Configures a number of settings on an ESXi host for a VCF deployment. 
 #>
-
 [CmdletBinding()]
 param (
     [Parameter(Mandatory=$true,ParameterSetName="hostnames")]
@@ -113,33 +112,7 @@ param (
     [string[]]$createAdmin
 )
 
-#Modules needed to run script and load
-$modules = @("Posh-SSH")
-
-#Check for correct modules
-Function checkModule ($m){
-    if (Get-Module | Where-Object {$_.Name -eq $m}) {
-        Write-Host "Module $m is already imported."
-    }
-    else{
-        Write-Host "Trying to import module $m"
-        Import-Module $m
-    }
-}
-
-#Load Modules
-Try
-{
-    ForEach($module in $modules){
-        checkModule $module
-    }
-}
-Catch
-{
-    Write-Error "...Failed to load modules"
-    Write-Error $_.Exception
-    Exit
-}
+. .\host-prep-helpers.ps1
 
 # Iterate through all the specified hosts
 foreach($hostname in $hostnames){
@@ -177,179 +150,108 @@ foreach($hostname in $hostnames){
 		Write-Host "...Connected to $hostname via HTTPS" -ForegroundColor Green
 		Write-Host
 		
-		# Disable CEIP
-		Write-Host "Adjusting CEIP configuration"
+		# Check if host is already connected to a vCenter
+		Write-Host "Checking if host is currently connected to a vCenter"
 		Try {
+			$managementServerIp = $vmhost.ExtensionData.Summary.ManagementServerIp
+			if( ![bool]$managementServerIp ){
+				Write-Host "...not managed by vCenter. Continuing with host prep." -ForegroundColor Green
+			} else {
+				Write-Host "...managed by the vCenter server at $managementServerIp" -ForegroundColor Red
+				Write-Host
+				$continuePrep = Read-Host -Prompt "Do you want to continue with host prep? (y/N)"
+				
+				if(($continuePrep -like "y") -or ($continuePrep -like "yes")){
+					Write-Host "...Continuing with host prep." -ForegroundColor Green
+				} else {
+					Write-Host "...Not continuing with host prep." -ForegroundColor Red
+					Write-Host
+					
+					# Disconnect from the host
+					Write-Host "Disconnecting HTTPS from the ESXi host $hostname"
+					Try {
+						# Close PowerCLI connection to the ESXi host
+						Disconnect-VIServer $hostname -Confirm:$false
+					}
+					Catch {
+						Write-Error "...Failed to disconnect HTTPS from $hostname"
+						Write-Error $_.Exception
+						Exit -1
+					}
+					Write-Host "...Disconnected HTTPS from $hostname" -ForegroundColor Green
+					Write-Host
+					Exit 0
+				}
+			}
+		}
+		Catch {
+			Write-Error "...Failed to check vCenter connectivity for $hostname"
+			Write-Error $_.Exception
+			Exit -1
+		}
+		Write-Host
+		
+		Try {
+			# Disable CEIP
 			if($disableCEIP){
-				Get-VMHost -Name $hostname | Get-AdvancedSetting -Name UserVars.HostClientCEIPOptIn | Set-AdvancedSetting -Value 2 -Confirm:$false | Out-Null
-				Write-Host "...CEIP Disabled!" -ForegroundColor Green
-				Write-Host
+				DisableCEIP -VMHostname $hostname
 			}
-			else {
-				Write-Host "...Leaving CEIP configuration alone" -ForegroundColor Green
-				Write-Host
-			}
-		}
-		Catch {
-			Write-Error "...Failed to disable CEIP"
-			Write-Error $_.Exception
-			#Exit -1
-		}
-		
-		# Match VM Network
-		Write-Host "Adjusting 'VM Network' portgroup configuration"
-		Try {
+			
+			# Match VM Network
 			if($matchVMNetwork){
-				$mgmtPG = Get-VirtualPortGroup -VMHost $vmhost -Name "Management Network"
-				Get-VirtualPortGroup -VMHost $vmhost -Name "VM Network" | Set-VirtualPortGroup -VLanId $mgmtPG.VLanId | Out-Null
-				Write-Host "...'VM Network' VLAN set!" -ForegroundColor Green
-				Write-Host
+				MatchVMNetwork -VMHost $vmhost
 			}
-			else{
-				Write-Host "...Leaving 'VM Network' configuration alone" -ForegroundColor Green
-				Write-Host
-			}
-		}
-		Catch {
-			Write-Error "...Failed to adjust 'VM Network' settings"
-			Write-Error $_.Exception
-			#Exit -1
-		}
-
-		# Set SSH Service status
-		Write-Host "Setting SSH Service status"
-		Try {
+			
+			# Set SSH Service status
 			if($startSSH){
-				Get-VMHost -Name $hostname | Get-VMHostService | Where {$_.Label -eq "SSH"} | Start-VMHostService | Out-Null
-				Write-Host "...SSH service started!" -ForegroundColor Green
-				Write-Host
+				StartSSHService -VMHostname $hostname -ServiceAction "start"
 			}
-			else{
-				Write-Host "...Leaving SSH service status alone." -ForegroundColor Green
-				Write-Host
-			}
-		}
-		Catch {
-			Write-Error "...Failed to start SSH service"
-			Write-Error $_.Exception
-			#Exit -1
-		}
-
-		# Set IPv6 support
-		Write-Host "Setting IPv6 support"
-		Try {
+			
+			# Set IPv6 support
 			if($disableIPv6){
-				$theVMHost = Get-VMHost -Name $hostname
-				$hostcli = Get-EsxCli -VMHost $theVMHost -V2
-				$argument = $hostcli.system.module.parameters.set.CreateArgs()
-				$argument.module = "tcpip4"
-				$argument.parameterstring = "ipv6=0"
-				$hostcli.system.module.parameters.set.Invoke($argument) | Out-Null
-				Write-Host "...IPv6 support disabled!" -ForegroundColor Green
-				Write-Host
+				DisableIPv6Support -VMHostname $hostname
 			}
-			else{
-				Write-Host "...Leaving IPv6 support alone." -ForegroundColor Green
-				Write-Host
-			}
-		}
-		Catch {
-			Write-Error "...Failed to disable IPv6 support"
-			Write-Error $_.Exception
-			#Exit -1
-		}
-		
-		# Create administrator account
-		Write-Host "Setting Admin account"
-		Try {
+			
+			# Create administrator account
 			if($createAdmin){
-				New-VMHostAccount -Id $createAdmin[0] -Password $createAdmin[1] -Confirm:$false | Out-Null
-				New-VIPermission -Entity (Get-Folder root) -Principal ladmin -Role Admin -Confirm:$false | Out-Null
-				Write-Host "...Additional administrator account created!" -ForegroundColor Green
-				Write-Host
+				CreateAdminAccount -Username $createAdmin[0] -Password $createAdmin[1]
 			}
-			else{
-				Write-Host "...Leaving administrator accounts alone." -ForegroundColor Green
-				Write-Host
-			}
-		}
-		Catch {
-			Write-Error "...Failed to create administrator account."
-			Write-Error $_.Exception
-			#Exit -1
-		}
 
-		if($rollCerts -or $restartServices -or $rollvmk0 -or $stigFile -or $updateHost){
-			# Connect via SSHCommand
-			Write-Host "Connecting to $hostname via SSH"
-			Try {
-				$sshStatus = (Get-VMHost -Name $hostname | Get-VMHostService | Where {$_.Label -eq "SSH"}).Running
-				if(!$sshStatus){
-					Get-VMHost -Name $hostname | Get-VMHostService | Where {$_.Label -eq "SSH"} | Start-VMHostService -Confirm:$false | Out-Null
+			if($rollCerts -or $restartServices -or $rollvmk0 -or $stigFile -or $updateHost){
+				# Connect via SSHCommand
+				Write-Host "Connecting to $hostname via SSH"
+				Try {
+					$sshStatus = (Get-VMHost -Name $hostname | Get-VMHostService | Where {$_.Label -eq "SSH"}).Running
+					if(!$sshStatus){
+						Get-VMHost -Name $hostname | Get-VMHostService | Where {$_.Label -eq "SSH"} | Start-VMHostService -Confirm:$false | Out-Null
+					}
+					$esxihostssh = New-SSHSession -ComputerName $hostname -Credential $esxicred -Force -KeepAliveInterval 5
 				}
-				$esxihostssh = New-SSHSession -ComputerName $hostname -Credential $esxicred -Force -KeepAliveInterval 5
-			}
-			Catch {
-				Write-Error "...Failed to connect to $hostname via SSH"
-				Write-Error $_.Exception
-				Exit -1
-			}
-			Write-Host "...Connected to $hostname via SSH" -ForegroundColor Green
-			Write-Host
-		}
-		
-		# Update host from repo 
-		Write-Host "Updating host version"
-		Try {
-			if($updateHost.Count -gt 0){
-				if($updateHost.Count -eq 2){
-					$updateProfile = $updateHost[0]
-					$updateURL = $updateHost[1]
-					Invoke-SSHCommand -SessionId $esxihostssh.SessionId -Command "esxcli software profile update -p $updateProfile -d $updateURL" -TimeOut 120 | Out-Null
-					Write-Host "...ESXi host update applied!" -ForegroundColor Green
-					Write-Host
+				Catch {
+					Write-Error "...Failed to connect to $hostname via SSH"
+					Write-Error $_.Exception
+					Exit -1
 				}
-				else{
-					Write-Host "...Incorrect number of values given!" -ForegroundColor Yellow
-					Write-Host "...Correct usage: -updateHost `"<profile name>`",`"<repo url>`"" -ForegroundColor Yellow
-					Write-Host "...Example: -updateHost `"ESXi-7.0U1d-17551050-standard`",`"https://172.16.33.120/update-repos/esxi/VMware-ESXi-7.0U1d-17551050-depot/index.xml`"" -ForegroundColor Yellow
-					Write-Host
-				}
-			}
-			else{
-				Write-Host "...Leaving host version alone." -ForegroundColor Green
+				Write-Host "...Connected to $hostname via SSH" -ForegroundColor Green
 				Write-Host
 			}
-		}
-		Catch {
-			Write-Error "...Failed to update host"
-			Write-Error $_.Exception
-			#Exit -1
-		}
-		
-		# Roll Certs
-		Write-Host "Checking cert preference"
-		Try {
+			
+			# Update host from repo 
+			if($updateHost.Count -gt 0){
+				UpdateVMHost -UpdateInfo $updateHost
+			}
+			
+			# Roll Certs
 			if($rollCerts){
+			Write-Host "Checking cert preference"
 				Invoke-SSHCommand -SessionId $esxihostssh.SessionId -Command '/sbin/generate-certificates' -TimeOut 30 | Out-Null
 				Write-Host "...Certificates rolled!" -ForegroundColor Green
 				Write-Host
 			}
-			else {
-				Write-Host "...Leaving certificates alone" -ForegroundColor Green
-				Write-Host
-			}
-		}
-		Catch {
-			Write-Error "...Failed to roll certificates"
-			Write-Error $_.Exception
-			Exit -1
-		}
-
-		# Generate new vmk0 MAC
-		Write-Host "Checking vmk0 option"
-		Try {
+			
+			# Generate new vmk0 MAC
 			if($rollvmk0){
+				Write-Host "Checking vmk0 option"
 				$hostVnicSpec = (Get-VMHost -Name $hostname | Get-View).Config.Network.Vnic[0].Spec
 				$hostIP = $hostVnicSpec.Ip.IpAddress
 				$hostnetmask = $hostVnicSpec.Ip.SubnetMask
@@ -365,34 +267,18 @@ foreach($hostname in $hostnames){
 				Write-Host "...vmk0 updated!" -ForegroundColor Green
 				Write-Host
 			}
-			else{
-				Write-Host "...vmk0 untouched!" -ForegroundColor Green
-				Write-Host
-			}
-		}
-		Catch {
-			Write-Error "...Failed to roll vmk0"
-			Write-Error $_.Exception
-			#Exit -1
-		}
-
-		# Restarting Services
-		Write-Host "Checking service preference"
-		Try {
+			
+			# Restarting Services
 			if($restartServices){
+				Write-Host "Checking service preference"
 				Invoke-SSHCommand -SessionId $esxihostssh.SessionId -Command 'services.sh restart' -TimeOut 60 | Out-Null
 				Write-Host "...Services restarted!" -ForegroundColor Green
 				Write-Host
 			}
-			else {
-				Write-Host "...Leaving services alone" -ForegroundColor Green
-				Write-Host
-			}
+			
 		}
 		Catch {
-			Write-Error "...Failed to restart services"
 			Write-Error $_.Exception
-			#Exit -1
 		}
 		
 		if($stigFile){
@@ -1555,17 +1441,17 @@ foreach($hostname in $hostnames){
 		}
 		
 		# Restart Host
-		Write-Host "Checking if host should be restarted"
 		Try {
 			if($restartHost){
+				Write-Host "Checking if host should be restarted"
 				Restart-VMHost -VMHost $vmhost -Force -Confirm:$false
 				Write-Host "...Host restarted!" -ForegroundColor Green
 				Write-Host
 			}
-			else{
-				Write-Host "...Leaving host power state alone." -ForegroundColor Green
-				Write-Host
-			}
+			#else{
+			#	Write-Host "...Leaving host power state alone." -ForegroundColor Green
+			#	Write-Host
+			#}
 		}
 		Catch {
 			Write-Error "...Failed to restart host"
