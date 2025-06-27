@@ -1,3 +1,25 @@
+function PrintHostDetails {
+	param (
+		$VMHost
+	)
+	
+	Write-Host "Name          : " -ForegroundColor Green -NoNewLine
+	Write-Host $VMHost.Name
+	Write-Host "Version       : " -ForegroundColor Green -NoNewLine
+	Write-Host $VMHost.Version
+	Write-Host "Build         : " -ForegroundColor Green -NoNewLine
+	Write-Host $VMHost.Build
+	Write-Host "Image Profile : " -ForegroundColor Green -NoNewLine
+	Write-Host (Get-View ($VMHost.ExtensionData.ConfigManager.ImageConfigManager)).HostImageConfigGetProfile().Name
+	Write-Host "Manufacturer  : " -ForegroundColor Green -NoNewLine
+	Write-Host $VMHost.Manufacturer
+	Write-Host "Model         : " -ForegroundColor Green -NoNewLine
+	Write-Host $VMHost.Model
+	Write-Host "CPU Type      : " -ForegroundColor Green -NoNewLine
+	Write-Host $VMHost.ProcessorType
+	Write-Host
+}
+
 function DisableCEIP {
     param (
         $VMHostname
@@ -68,6 +90,9 @@ function UpdateVMHost {
 	)
 	
 	Write-Host "Updating host version"
+	
+	# Check profile validity
+	
 	if($UpdateInfo.Count -eq 2){
 		$updateProfile = $UpdateInfo[0]
 		$updateURL = $UpdateInfo[1]

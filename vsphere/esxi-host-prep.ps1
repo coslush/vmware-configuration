@@ -140,7 +140,6 @@ foreach($hostname in $hostnames){
 		Try {
 			Connect-VIServer $hostname -Credential $esxicred -Protocol https -ErrorAction Stop | Out-Null
 			$vmhost = Get-VMHost -Name $hostname
-			
 		}
 		Catch {
 			Write-Error "...Failed to connect to $hostname via HTTPS"
@@ -149,6 +148,7 @@ foreach($hostname in $hostnames){
 		}
 		Write-Host "...Connected to $hostname via HTTPS" -ForegroundColor Green
 		Write-Host
+		PrintHostDetails -VMHost $vmhost
 		
 		# Check if host is already connected to a vCenter
 		Write-Host "Checking if host is currently connected to a vCenter"
@@ -259,7 +259,14 @@ foreach($hostname in $hostnames){
 				if(!$hostGW){
 					$hostGW = (Get-VMHost -Name $hostname | Get-View).Config.Network.IpRouteConfig.DefaultGateway
 				}
-				$vmk0ResetScript = "echo ""esxcli network ip interface remove --interface-name vmk0"" > /tmp/vmk0Reset.sh; echo ""esxcli network ip interface add --interface-name vmk0 --portgroup-name 'Management Network'"" >> /tmp/vmk0Reset.sh; echo ""esxcli network ip interface ipv4 set -i vmk0 -I $hostIP -N $hostnetmask -g $hostGW -t static"" >> /tmp/vmk0Reset.sh; echo ""esxcli network ip route ipv4 add -n default -g $hostGW"" >> /tmp/vmk0Reset.sh"
+				
+				# Broken out for better readability 
+				$vmk0ResetScript =   "echo ""esxcli network ip interface remove --interface-name vmk0"" > /tmp/vmk0Reset.sh;"
+				$vmk0ResetScript += " echo ""esxcli network ip interface add --interface-name vmk0 --portgroup-name 'Management Network' --mtu 1500 --netstack defaultTcpipStack"" >> /tmp/vmk0Reset.sh;"
+				$vmk0ResetScript += " echo ""esxcli network ip interface ipv4 set --interface-name vmk0 --ipv4 $hostIP --netmask $hostnetmask --type static"" >> /tmp/vmk0Reset.sh;" 
+				$vmk0ResetScript += " echo ""esxcli network ip route ipv4 add --network default --gateway $hostGW"" >> /tmp/vmk0Reset.sh;" 
+				$vmk0ResetScript += " echo ""esxcli network ip interface ipv4 set --interface-name vmk0 --ipv4 $hostIP --netmask $hostnetmask --gateway $hostGW --type static"" >> /tmp/vmk0Reset.sh"
+				
 				Invoke-SSHCommand -SessionId $esxihostssh.SessionId -Command "$vmk0ResetScript" -TimeOut 60 | Out-Null
 				Invoke-SSHCommand -SessionId $esxihostssh.SessionId -Command "/bin/sh /tmp/vmk0Reset.sh" -TimeOut 60 | Out-Null
 				Invoke-SSHCommand -SessionId $esxihostssh.SessionId -Command "rm -rf /tmp/vmk0Reset.sh" -TimeOut 60 | Out-Null
