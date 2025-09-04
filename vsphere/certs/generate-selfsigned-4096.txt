@@ -1,0 +1,7 @@
+mv /etc/vmware/ssl/rui.crt /etc/vmware/ssl/rui.crt.`date +%Y%m%d`
+mv /etc/vmware/ssl/rui.key /etc/vmware/ssl/rui.key.`date +%Y%m%d`
+cp /bin/generate-certificates /tmp/generate-certificates
+chmod +w /tmp/generate-certificates
+sed -i 's/2048/4096/g' /tmp/generate-certificates
+/tmp/generate-certificates
+rm -f /tmp/generate-certificates
