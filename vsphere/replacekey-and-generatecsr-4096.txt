@@ -1,0 +1,11 @@
+# copy off the old keys
+mv /etc/vmware/ssl/rui.crt /etc/vmware/ssl/rui.crt.`date +%Y%m%d` 
+mv /etc/vmware/ssl/rui.key /etc/vmware/ssl/rui.key.`date +%Y%m%d`
+
+# Generate the new key and csr
+# Fill in <City/Town>, <FQDN> (in there 2x), <vmk0 IP>
+openssl req  -nodes -newkey rsa:4096 -keyout /etc/vmware/ssl/rui.key -out /etc/vmware/ssl/rui.csr \
+  -subj "/C=US/ST=Maryland/L=<City/Town>/CN=<FQDN>" \
+  -addext "subjectAltName = DNS:<FQDN>, DNS:<vmk0 IP>" \
+  -addext "keyUsage=digitalSignature,keyEncipherment,dataEncipherment" \
+  -addext "extendedKeyUsage=serverAuth,clientAuth"
